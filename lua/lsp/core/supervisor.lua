@@ -54,6 +54,7 @@
 
 local notify = require("lib.nvim.notify").create("[lsp.core.supervisor]")
 local autocmd = require("lib.nvim.bindings.autocmd")
+local retry_backoff = require("lib.nvim.patterns.retry_backoff")
 
 local api = vim.api
 local lsp = vim.lsp
@@ -410,8 +411,11 @@ end
 ---@param n integer # 1-based attempt number.
 ---@return integer ms
 local function backoff(n)
-  local ms = cfg.initial_delay_ms * (2 ^ math.max(0, n - 1))
-  return math.floor(math.min(ms, cfg.max_delay_ms))
+  return math.floor(retry_backoff.delay(math.max(1, n), {
+    base_ms = cfg.initial_delay_ms,
+    factor = 2,
+    max_ms = cfg.max_delay_ms,
+  }))
 end
 
 ---@internal
