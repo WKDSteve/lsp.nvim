@@ -49,6 +49,9 @@ end
 ---@param glob string
 ---@return string[]
 function M.mason_glob(pkg, glob)
+  if vim.fn.has("win32") ~= 1 then
+    return {} -- the candidates only count on Windows (see `resolve`)
+  end
   local found =
     vim.fn.glob(vim.fn.stdpath("data") .. "/mason/packages/" .. pkg .. "/" .. glob, true, true)
   table.sort(found, function(a, b)
