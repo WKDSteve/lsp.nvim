@@ -14,6 +14,15 @@
 ---@see lsp.config.KEYMAPS
 ---@see lsp.bindings.keymaps
 
+---@class Lsp.Bindings.Actions
+---@field hints_toggle fun()
+---@field hints_toggle_filetype fun()
+---@field hints_on fun()
+---@field hints_off fun()
+---@field lightbulb_toggle fun()
+---@field lightbulb_toggle_filetype fun()
+---@field lightbulb_on fun()
+---@field lightbulb_off fun()
 local M = {}
 
 ---@internal
@@ -296,109 +305,60 @@ function M.workspace_project(action, arg)
   end
 end
 
--- ---------------------------------------------------------------- inlay hints
+-- ------------------------------------------------- inlay hints, code-action indicator
 
 ---@internal
---- The runtime toggle for Neovim's native inlay hints.
----@return table|nil
-local function hints()
-  local ok, mod = pcall(require, "lsp.core.inlay_hints")
-  return ok and mod or nil
-end
-
---- Toggle inlay hints globally.
+--- Generate the four runtime switch actions of a feature module that exposes
+--- `toggle(ft)` and `set(on, ft)`: `<prefix>_toggle`, `_toggle_filetype`, `_on`
+--- and `_off`. A module that fails to load turns every action into a no-op.
+---@param modname string  Module to load lazily on each call
+---@param prefix string   Action name prefix, e.g. `hints`
 ---@return nil
-function M.hints_toggle()
-  local ih = hints()
-  if ih then
-    ih.toggle(nil)
+local function make_switch_actions(modname, prefix)
+  local function load()
+    local ok, mod = pcall(require, modname)
+    return ok and mod or nil
+  end
+
+  M[prefix .. "_toggle"] = function()
+    local m = load()
+    if m then
+      m.toggle(nil)
+    end
+  end
+
+  M[prefix .. "_toggle_filetype"] = function()
+    local m = load()
+    if m == nil then
+      return
+    end
+    local ft = vim.bo[0].filetype
+    if ft == "" then
+      require("lib.nvim.notify").create("[lsp.nvim]").warn("this buffer has no filetype")
+      return
+    end
+    m.toggle(ft)
+  end
+
+  M[prefix .. "_on"] = function()
+    local m = load()
+    if m then
+      m.set(true, nil)
+    end
+  end
+
+  M[prefix .. "_off"] = function()
+    local m = load()
+    if m then
+      m.set(false, nil)
+    end
   end
 end
 
---- Toggle inlay hints for the current buffer's filetype only.
----@return nil
-function M.hints_toggle_filetype()
-  local ih = hints()
-  if ih == nil then
-    return
-  end
-  local ft = vim.bo[0].filetype
-  if ft == "" then
-    require("lib.nvim.notify").create("[lsp.nvim]").warn("this buffer has no filetype")
-    return
-  end
-  ih.toggle(ft)
-end
-
---- Turn inlay hints on globally.
----@return nil
-function M.hints_on()
-  local ih = hints()
-  if ih then
-    ih.set(true, nil)
-  end
-end
-
---- Turn inlay hints off globally.
----@return nil
-function M.hints_off()
-  local ih = hints()
-  if ih then
-    ih.set(false, nil)
-  end
-end
-
--- ------------------------------------------------------- code-action indicator
-
----@internal
---- The runtime toggle for the code-action indicator.
----@return table|nil
-local function lightbulb()
-  local ok, mod = pcall(require, "lsp.core.lightbulb")
-  return ok and mod or nil
-end
-
---- Toggle the code-action indicator globally.
----@return nil
-function M.lightbulb_toggle()
-  local lb = lightbulb()
-  if lb then
-    lb.toggle(nil)
-  end
-end
-
---- Toggle the code-action indicator for the current buffer's filetype only.
----@return nil
-function M.lightbulb_toggle_filetype()
-  local lb = lightbulb()
-  if lb == nil then
-    return
-  end
-  local ft = vim.bo[0].filetype
-  if ft == "" then
-    require("lib.nvim.notify").create("[lsp.nvim]").warn("this buffer has no filetype")
-    return
-  end
-  lb.toggle(ft)
-end
-
---- Turn the code-action indicator on globally.
----@return nil
-function M.lightbulb_on()
-  local lb = lightbulb()
-  if lb then
-    lb.set(true, nil)
-  end
-end
-
---- Turn the code-action indicator off globally.
----@return nil
-function M.lightbulb_off()
-  local lb = lightbulb()
-  if lb then
-    lb.set(false, nil)
-  end
-end
+-- Inlay hints: toggle globally, toggle for the buffer's filetype, on, off.
+make_switch_actions("lsp.core.inlay_hints", "hints")
+-- Code-action indicator: the same four actions.
+make_switch_actions("lsp.core.lightbulb", "lightbulb")
 
 -- ---------------------------------------------------------------- rename
 
