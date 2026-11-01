@@ -1,4 +1,5 @@
 ---@module 'lsp.core.handlers'
+-- handrolled-ok: a per-key flush window that sends once, with its own pending slot
 ---@brief Wraps `textDocument/publishDiagnostics`: dedup, then throttle.
 ---@description
 --- Two problems with one server push, in the order they have to be solved.

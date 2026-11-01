@@ -1,4 +1,5 @@
 ---@module 'lsp.tools.lsp_signature.help'
+-- handrolled-ok: an auto-dismiss timeout of a notice, not a debounce
 --- The Insert-mode signature help (`signature_help`, `<M-s>`): Neovim's own
 --- `vim.lsp.buf.signature_help`, framed like the hover of hover.nvim, plus the
 --- answer it never gives -- a visible "No signature help".
