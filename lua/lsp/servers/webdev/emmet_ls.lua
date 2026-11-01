@@ -15,7 +15,12 @@ function M.setup(shared, opts)
 
   if type(lsp.config) == "table" then
     lsp.config("emmet_ls", {
-      cmd = { "emmet-ls", "--stdio" }, -- ensure 'emmet-ls' is installed
+      -- Node directly, not Mason's .CMD wrapper (see lsp.core.mason_node).
+      cmd = require("lsp.core.mason_node").cmd_or(
+        "emmet-ls",
+        { "emmet-ls", "--stdio" },
+        { "--stdio" }
+      ),
       filetypes = {
         "html",
         "htmldjango",

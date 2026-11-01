@@ -83,7 +83,12 @@ function M.setup(shared, opts)
   -- bashls understands POSIX sh and bash; for zsh, completion/diagnostics are
   -- useful but not fully semantically accurate -- a pragmatic compromise.
   vim.lsp.config("bashls", {
-    cmd = { "bash-language-server", "start" },
+    -- Node directly, not Mason's .CMD wrapper (see lsp.core.mason_node).
+    cmd = require("lsp.core.mason_node").cmd_or(
+      "bash-language-server",
+      { "bash-language-server", "start" },
+      { "start" }
+    ),
     filetypes = { "sh", "bash", "zsh", "ksh" },
     root_markers = { ".git", "shell.nix" },
     capabilities = shared.capabilities,

@@ -139,4 +139,68 @@ describe("server commands", function()
       assert.are.same({ vim.fs.normalize(exe) }, registered_cmd("lua_ls", "lsp.servers.lua_ls"))
     end)
   end)
+
+  -- The other Mason servers: native exes, then Node servers behind npm's .cmd shim.
+  for _, case in ipairs({
+    { "clangd", "lsp.servers.clangd", "clangd/clangd_19.1.2/bin/clangd.exe", { "clangd" } },
+    { "gopls", "lsp.servers.gopls", "gopls/gopls.exe", { "gopls" } },
+    { "zls", "lsp.servers.zig", "zls/zls.exe", { "zls" } },
+    {
+      "wasm_language_tools",
+      "lsp.servers.webdev.wasm_language_tools",
+      "wasm-language-tools/wat_server.exe",
+      { "wat_server" },
+    },
+  }) do
+    local name, module, rel, fallback = case[1], case[2], case[3], case[4]
+    it(name .. " starts the Mason exe directly, else keeps the PATH name", function()
+      with_env(1, function(root)
+        assert.are.same(fallback, registered_cmd(name, module))
+        local exe = touch(root .. "/data/mason/packages/" .. rel)
+        assert.are.same({ vim.fs.normalize(exe) }, registered_cmd(name, module))
+      end)
+    end)
+  end
+
+  for _, case in ipairs({
+    {
+      "bashls",
+      "lsp.servers.bashls",
+      "bash-language-server",
+      "bash-language-server",
+      { "bash-language-server", "start" },
+      "start",
+    },
+    {
+      "astro",
+      "lsp.servers.webdev.astro",
+      "astro-language-server",
+      "astro-ls",
+      { "astro-ls", "--stdio" },
+      "--stdio",
+    },
+    {
+      "emmet_ls",
+      "lsp.servers.webdev.emmet_ls",
+      "emmet-ls",
+      "emmet-ls",
+      { "emmet-ls", "--stdio" },
+      "--stdio",
+    },
+  }) do
+    local name, module, pkg, bin, fallback, arg = unpack(case)
+    it(name .. " starts node directly behind Mason's shim, else keeps the PATH name", function()
+      with_env(1, function(root)
+        assert.are.same(fallback, registered_cmd(name, module))
+        local bin_dir = root .. "/data/mason/packages/" .. pkg .. "/node_modules/.bin"
+        local entry = touch(root .. "/data/mason/packages/" .. pkg .. "/node_modules/x/cli.js")
+        vim.fn.mkdir(bin_dir, "p")
+        vim.fn.writefile(
+          { [[  "%_prog%"  "%dp0%\..\x\cli.js" %*]] },
+          bin_dir .. "/" .. bin .. ".cmd"
+        )
+        assert.are.same({ "node", vim.fs.normalize(entry), arg }, registered_cmd(name, module))
+      end)
+    end)
+  end
 end)

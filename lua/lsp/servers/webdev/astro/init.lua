@@ -43,7 +43,13 @@ function M.setup(shared, opts)
   caps.textDocument.completion.completionItem.snippetSupport = true
 
   vim.lsp.config("astro", {
-    cmd = { "astro-ls", "--stdio" },
+    -- Node directly, not Mason's .CMD wrapper (see lsp.core.mason_node).
+    cmd = require("lsp.core.mason_node").cmd_or(
+      "astro-language-server",
+      { "astro-ls", "--stdio" },
+      { "--stdio" },
+      "astro-ls"
+    ),
 
     filetypes = { "astro" },
 

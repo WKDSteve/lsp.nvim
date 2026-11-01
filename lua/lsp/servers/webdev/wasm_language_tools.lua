@@ -15,7 +15,10 @@ function M.setup(shared, opts)
   end
 
   vim.lsp.config("wasm_language_tools", {
-    cmd = { "wat_server" },
+    -- The real exe, not Mason's .CMD wrapper (see lsp.core.direct_exe).
+    cmd = require("lsp.core.direct_exe").cmd("wat_server", {
+      require("lsp.core.direct_exe").mason_package("wasm-language-tools", "wat_server.exe"),
+    }),
     filetypes = { "wasm", "wat" },
     root_markers = { ".git", "Cargo.toml", "package.json" },
     capabilities = shared.capabilities,

@@ -15,7 +15,10 @@ function M.setup(shared, opts)
 
   if type(vim.lsp.config) == "table" then
     lsp.config("gopls", {
-      cmd = { "gopls" },
+      -- The real exe, not Mason's .CMD wrapper (see lsp.core.direct_exe).
+      cmd = require("lsp.core.direct_exe").cmd("gopls", {
+        require("lsp.core.direct_exe").mason_package("gopls", "gopls.exe"),
+      }),
       filetypes = { "go", "gomod", "gosum" },
       root_markers = { "go.work", "go.mod", ".git" },
       capabilities = shared.capabilities,

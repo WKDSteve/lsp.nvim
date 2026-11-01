@@ -15,7 +15,11 @@ function M.setup(shared, opts)
 
   if type(lsp.config) == "table" then
     lsp.config("clangd", {
-      cmd = { "clangd" },
+      -- The real exe, not Mason's .CMD wrapper (see lsp.core.direct_exe).
+      cmd = require("lsp.core.direct_exe").cmd(
+        "clangd",
+        require("lsp.core.direct_exe").mason_glob("clangd", "clangd_*/bin/clangd.exe")
+      ),
       filetypes = { "c", "cpp", "objc", "objcpp" },
       root_markers = { "compile_commands.json", ".git" },
       capabilities = shared.capabilities,

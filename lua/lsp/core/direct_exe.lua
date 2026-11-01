@@ -42,6 +42,21 @@ function M.mason_package(pkg, exe)
   return vim.fn.stdpath("data") .. "/mason/packages/" .. pkg .. "/" .. exe
 end
 
+--- Executables of a Mason package whose folder carries a version
+--- (`packages/<pkg>/<glob>`, e.g. clangd's `clangd_19.1.2/bin/clangd.exe`),
+--- the newest first.
+---@param pkg string
+---@param glob string
+---@return string[]
+function M.mason_glob(pkg, glob)
+  local found =
+    vim.fn.glob(vim.fn.stdpath("data") .. "/mason/packages/" .. pkg .. "/" .. glob, true, true)
+  table.sort(found, function(a, b)
+    return a > b
+  end)
+  return found
+end
+
 --- Executable of a scoop app, `<scoop root>/apps/<app>/current/<rel>`.
 --- The root is `$SCOOP` when set, otherwise `~/scoop` (scoop's default).
 ---@param app string  # scoop app name, e.g. "lua-language-server"
