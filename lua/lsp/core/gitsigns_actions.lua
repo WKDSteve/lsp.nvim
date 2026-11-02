@@ -129,7 +129,10 @@ end
 ---@return integer[][]|nil
 local function hunk_spans(bufnr)
   local cached = hunk_spans_cache[bufnr]
-  if cached ~= nil then
+  -- Only a non-empty answer is trusted: gitsigns can fire `GitSignsUpdate` before it holds the hunks of a
+  -- freshly opened file (seen on Linux: `lsa` offered no hunk action for several seconds), and "no hunks"
+  -- is the cheap case to ask again.
+  if cached ~= nil and #cached > 0 then
     return cached
   end
   return compute_hunk_spans(bufnr)

@@ -419,6 +419,30 @@ describe("lsp.core.gitsigns_actions", function()
       assert.are.equal(after_attach, calls())
     end)
 
+    it(
+      "asks again while the cache holds no hunk, in case the update came before the hunks",
+      function()
+        gs_actions.setup({ gitsigns = true })
+        vim.b[bufnr].gitsigns_status_dict = {}
+        hunks = {}
+        fire_update()
+        vim.wait(2000, function()
+          return #vim.lsp.get_clients({ name = gs_actions.NAME, bufnr = bufnr }) > 0
+        end, 10)
+        assert.is_false(gs_actions.touches_hunk(bufnr, 2, 2))
+
+        -- gitsigns now has the hunk but has not fired another update yet
+        hunks = { { added = { start = 3, count = 1 } } } -- 0-based span [2, 2]
+        assert.is_true(gs_actions.touches_hunk(bufnr, 2, 2))
+        -- the next update fills the cache; from then on it is served without asking
+        fire_update()
+        vim.wait(50)
+        local calls = count_get_hunks_calls()
+        assert.is_true(gs_actions.touches_hunk(bufnr, 2, 2))
+        assert.are.equal(0, calls(), "once the cache holds a hunk it is served from the cache")
+      end
+    )
+
     it("keeps serving the old spans from cache until the next GitSignsUpdate", function()
       gs_actions.setup({ gitsigns = true })
       vim.b[bufnr].gitsigns_status_dict = {}
