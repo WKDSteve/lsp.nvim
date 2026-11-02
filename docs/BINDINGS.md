@@ -63,7 +63,7 @@ Two things worth knowing about the left-hand sides:
 
 <!-- BEGIN GENERATED KEYMAPS -->
 
-The `default` preset binds all 59 entries below. `minimal` binds the 34
+The `default` preset binds all 60 entries below. `minimal` binds the 34
 marked in the last column; `none` binds nothing.
 
 | action | lhs | mode | needs | minimal | description |
@@ -92,6 +92,7 @@ marked in the last column; `none` binds nothing.
 | `lightbulb_toggle_filetype` | `<leader>tB` | n | — | yes | Toggle the code-action indicator for this filetype |
 | `loc_next` | `]l` | n | — | yes | Next location-list entry |
 | `loc_prev` | `[l` | n | — | yes | Prev location-list entry |
+| `lua_root` | `<leader>gtt` | n | — | — | Jump to the head of the enclosing Lua table/function (count: levels up) |
 | `marksman_hints` | `<leader>lb` | n | — | yes | Toggle Marksman markdown hints |
 | `peek_definition` | `lsp` | n | — | — | Peek definition (floating, editable) |
 | `peek_type_definition` | `lsT` | n | — | — | Peek type definition (floating, editable) |

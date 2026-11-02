@@ -179,6 +179,16 @@ already; the existing `<leader>xls` binds the plain list view, which has none of
 those settings. For Markdown it doubles as a table of contents — marksman
 reports headings as nested symbols. Needs Trouble.
 
+## Lua structure root
+
+`<leader>gtt` (`lua_root`) jumps from inside a nested Lua table or function to the
+opening line of the structure around the cursor. Without a count it goes to the
+outermost one; `2<leader>gtt` goes two levels up (clamped to the outermost). The
+position is found with Treesitter, not with `documentSymbol`, so anonymous tables
+(`opts = { a = { b = 1 } }`) count and no running server is needed. On the head
+of the outermost structure, outside one, or in a non-Lua buffer it only says so.
+`<C-o>` returns. It is not in the `minimal` preset.
+
 ## Coming from lspsaga
 
 lsp.nvim used lspsaga for the winbar breadcrumb and nothing else, and no longer

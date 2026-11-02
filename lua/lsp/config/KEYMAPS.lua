@@ -246,6 +246,16 @@ local entries = {
     desc = "Toggle the LSP breadcrumb in the winbar (global)",
   },
 
+  -- ------------------------------------------------------ Lua structure root
+  -- The key the dead `<leader>gtt` was meant to be (it pointed at a module that
+  -- never existed). A count means "N levels up". See `lsp.core.lua_root`.
+  lua_root = {
+    lhs = "<leader>gtt",
+    mode = "n",
+    rhs = actions.lua_root,
+    desc = "Jump to the head of the enclosing Lua table/function (count: levels up)",
+  },
+
   -- ------------------------------------------------------------ diagnostics
   diag_to_qflist = {
     lhs = "<leader>wq",

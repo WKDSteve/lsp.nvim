@@ -897,6 +897,16 @@ function M.winbar_toggle_filetype()
   wb.toggle(ft)
 end
 
+--- Jump from inside a nested Lua table or function to the head of the enclosing
+--- structure. A count means "that many levels up"; without one the outermost.
+---@return nil
+function M.lua_root()
+  local jumped, why = require("lsp.core.lua_root").jump({ count = vim.v.count, center = true })
+  if not jumped and why then
+    notify().info(why)
+  end
+end
+
 ---@internal
 --- Insert-mode signature help: framed like the hover of hover.nvim, and a small
 --- "No signature help" float when there is nothing at the cursor. See
