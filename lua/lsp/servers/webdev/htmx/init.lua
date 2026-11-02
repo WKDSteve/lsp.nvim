@@ -19,13 +19,6 @@ end
 ---@param opts { enable?: boolean }|nil
 ---@return nil
 function M.setup(shared, opts)
-  shared = shared or {}
-  opts = opts or {}
-
-  if type(vim.lsp.config) ~= "table" then
-    return
-  end
-
   local htmx_cmd = find_htmx_lsp()
   if not htmx_cmd then
     notify.info("htmx-lsp not found; skipping HTMX LSP setup")
@@ -47,19 +40,12 @@ function M.setup(shared, opts)
   -- `htmx/filter_logs.lua` still holds the JSON filter for whoever builds the
   -- mechanism that could use it.
 
-  vim.lsp.config("htmx", {
+  require("lsp.servers.define")("htmx", shared, opts, {
     cmd = { htmx_cmd },
     filetypes = { "html", "astro", "htmldjango", "eruby" },
     root_markers = { ".git", "package.json" },
-    capabilities = shared.capabilities,
-    on_attach = shared.on_attach,
-    on_init = shared.on_init,
     -- handlers = handlers,  -- Uncomment to enable stderr filtering
   })
-
-  if opts.enable ~= false then
-    pcall(vim.lsp.enable, "htmx")
-  end
 end
 
 return M

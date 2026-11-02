@@ -27,9 +27,6 @@ end
 ---@param opts { enable?: boolean }|nil
 ---@return nil
 function M.setup(shared, opts)
-  shared = shared or {}
-  opts = opts or {}
-
   -- Early exit if requirements not met
   local available, err = is_kotlin_available()
   if not available then
@@ -37,11 +34,7 @@ function M.setup(shared, opts)
     return
   end
 
-  if type(vim.lsp.config) ~= "table" then
-    return
-  end
-
-  vim.lsp.config("kotlin_language_server", {
+  require("lsp.servers.define")("kotlin_language_server", shared, opts, {
     cmd = { "kotlin-language-server" },
     filetypes = { "kotlin" },
     root_markers = {
@@ -51,9 +44,6 @@ function M.setup(shared, opts)
       "build.gradle.kts",
       ".git",
     },
-    capabilities = shared.capabilities,
-    on_attach = shared.on_attach,
-    on_init = shared.on_init,
     settings = {
       kotlin = {
         compiler = {
@@ -64,10 +54,6 @@ function M.setup(shared, opts)
       },
     },
   })
-
-  if opts.enable ~= false then
-    pcall(vim.lsp.enable, "kotlin_language_server")
-  end
 end
 
 return M

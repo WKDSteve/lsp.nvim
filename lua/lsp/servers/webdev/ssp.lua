@@ -7,13 +7,6 @@ local M = {}
 ---@param opts { enable?: boolean }|nil
 ---@return nil
 function M.setup(shared, opts)
-  shared = shared or {}
-  opts = opts or {}
-
-  if type(vim.lsp.config) ~= "table" then
-    return
-  end
-
   -- SSP here means server-side processing (HTML/PHP/ERB), so the html language
   -- server covers the templating well enough.
   --
@@ -34,7 +27,7 @@ function M.setup(shared, opts)
   -- and started fighting the external formatter. Its own name keeps the two
   -- configs apart, and `html` is dropped from the filetypes below so the two
   -- do not both start a client for the same buffer.
-  vim.lsp.config("ssp", {
+  require("lsp.servers.define")("ssp", shared, opts, {
     -- Direct `node <entry>` instead of Mason's .cmd shim: the shim makes
     -- cmd.exe the child and node.exe a grandchild, and on quit Neovim waits
     -- forever for a pipe the grandchild still holds. Measured and confirmed --
@@ -59,14 +52,7 @@ function M.setup(shared, opts)
     -- when it does. It is opt-in (`servers` does not list it by default).
     filetypes = { "ssp", "ejs" },
     root_markers = { ".git", "package.json" },
-    capabilities = shared.capabilities,
-    on_attach = shared.on_attach,
-    on_init = shared.on_init,
   })
-
-  if opts.enable ~= false then
-    pcall(vim.lsp.enable, "ssp")
-  end
 end
 
 return M

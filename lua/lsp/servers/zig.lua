@@ -1,8 +1,6 @@
 ---@module 'lsp.servers.zig'
 --- zls via native LSP config/enable (Neovim ≥ 0.11).
 
-local lsp = vim.lsp
-
 ---@class ZigServer
 local M = {}
 
@@ -13,25 +11,14 @@ M.lsp_name = "zls"
 ---@param opts { enable?: boolean }|nil
 ---@return nil
 function M.setup(shared, opts)
-  shared = shared or {}
-  opts = opts or {}
-
-  if type(vim.lsp.config) == "table" then
-    lsp.config("zls", {
-      -- The real exe, not Mason's .CMD wrapper (see lsp.core.direct_exe).
-      cmd = require("lsp.core.direct_exe").cmd("zls", {
-        require("lsp.core.direct_exe").mason_package("zls", "zls.exe"),
-      }),
-      filetypes = { "zig", "zir" },
-      root_markers = { "build.zig", "zls.json", ".git" },
-      capabilities = shared.capabilities,
-      on_attach = shared.on_attach,
-      on_init = shared.on_init,
-    })
-    if opts.enable ~= false then
-      pcall(lsp.enable, "zls")
-    end
-  end
+  require("lsp.servers.define")("zls", shared, opts, {
+    -- The real exe, not Mason's .CMD wrapper (see lsp.core.direct_exe).
+    cmd = require("lsp.core.direct_exe").cmd("zls", {
+      require("lsp.core.direct_exe").mason_package("zls", "zls.exe"),
+    }),
+    filetypes = { "zig", "zir" },
+    root_markers = { "build.zig", "zls.json", ".git" },
+  })
 end
 
 return M

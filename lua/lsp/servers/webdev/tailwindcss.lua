@@ -7,14 +7,7 @@ local M = {}
 ---@param opts { enable?: boolean }|nil
 ---@return nil
 function M.setup(shared, opts)
-  shared = shared or {}
-  opts = opts or {}
-
-  if type(vim.lsp.config) ~= "table" then
-    return
-  end
-
-  vim.lsp.config("tailwindcss", {
+  require("lsp.servers.define")("tailwindcss", shared, opts, {
     -- Direct `node <entry>` instead of Mason's .cmd shim: the shim makes
     -- cmd.exe the child and node.exe a grandchild, and on quit Neovim waits
     -- forever for a pipe the grandchild still holds. Measured and confirmed --
@@ -38,9 +31,6 @@ function M.setup(shared, opts)
       "svelte",
     },
     root_markers = { "tailwind.config.js", "tailwind.config.ts", "tailwind.config.cjs", ".git" },
-    capabilities = shared.capabilities,
-    on_attach = shared.on_attach,
-    on_init = shared.on_init,
     settings = {
       tailwindCSS = {
         experimental = {
@@ -62,10 +52,6 @@ function M.setup(shared, opts)
       },
     },
   })
-
-  if opts.enable ~= false then
-    pcall(vim.lsp.enable, "tailwindcss")
-  end
 end
 
 return M
