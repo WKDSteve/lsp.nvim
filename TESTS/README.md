@@ -199,3 +199,14 @@ suite follows, with why:
 None of the above showed a defect while being read for this pass; they are
 deferred on cost/risk grounds, not because they were checked and found
 clean.
+
+## Test sheets and terminal specs (the live checks of the lspsaga replacements)
+
+* `TESTS/sheets/*.sheet.lua` are checks that used to be done by hand (testing.nvim `docs/SHEETS.md`); `TESTS/lsp/sheets_spec.lua`
+  runs each as a case `sheet:<id>` in a child editor. The language server is an in-process stub
+  (`TESTS/support/stub_server.lua`), so nothing needs to be installed; the gitsigns sheet uses the real gitsigns
+  and git and is a reported `n/a` without them.
+* `TESTS/lsp/pty_fzf_spec.lua` runs a real Neovim with a real fzf-lua inside tmux (WSL on Windows, testing.nvim's
+  `testing.pty`; editor `TESTS/pty/init.lua`) and reads the terminal screen: the fzf windows of `lsa`, `gra`,
+  `lsh`/`lsH` and `lsc`/`lsC`. Without tmux, the fzf binary or fzf-lua it prints `n/a  <reason>` (a reported skip).
+* `lspsaga-by-hand.sheet.lua` lists what still needs your real servers, font and external program.

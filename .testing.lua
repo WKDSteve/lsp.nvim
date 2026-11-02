@@ -60,6 +60,10 @@ return {
       "true",
       -- sheets_spec.lua: every test sheet (TESTS/sheets/) runs in a child editor.
       "nvim",
+      -- pty_fzf_spec.lua drives a real Neovim with fzf-lua in tmux (WSL on Windows; `sh` probes for the fzf binary on Linux).
+      "wsl",
+      "tmux",
+      "sh",
     },
   },
   -- The runner counts which commands, keymaps and autocommands the specs exercise (docs/SURFACE.md of testing.nvim);
