@@ -58,6 +58,8 @@ return {
       -- usercmds_impl_spec.lua registers fake servers with cmd = { "true" }: a no-op executable that
       -- vim.lsp.start() launches so that :Lsp start/restart/info have a running client to count.
       "true",
+      -- sheets_spec.lua: every test sheet (TESTS/sheets/) runs in a child editor.
+      "nvim",
     },
   },
   -- The runner counts which commands, keymaps and autocommands the specs exercise (docs/SURFACE.md of testing.nvim);
