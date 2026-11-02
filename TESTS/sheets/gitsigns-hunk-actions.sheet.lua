@@ -71,6 +71,8 @@ return {
         vim.cmd.edit(vim.fn.fnameescape(root .. "/" .. name))
         return vim.wait(8000, function()
           return #vim.lsp.get_clients({ bufnr = 0, name = "lsp.nvim-gitsigns" }) > 0 and #(require("gitsigns").get_hunks() or {}) == hunks
+            -- lsp.nvim caches the hunk spans per GitSignsUpdate: ask only once its cache knows a hunk
+            and require("lsp.core.gitsigns_actions").touches_hunk(vim.api.nvim_get_current_buf(), 0, vim.api.nvim_buf_line_count(0) - 1)
         end, 50)
       end
       _G.staged = function(name) return _G.git("diff", "--cached", "--", name) end]],
@@ -87,7 +89,8 @@ return {
     },
     { keys = "lsa", note = "lsa at the cursor" },
     {
-      expect = [[vim.tbl_contains(_G.titles, "gitsigns: Stage hunk") and vim.tbl_contains(_G.titles, "gitsigns: Reset hunk") and vim.tbl_contains(_G.titles, "gitsigns: Preview hunk")]],
+      wait = [[vim.tbl_contains(_G.titles, "gitsigns: Stage hunk") and vim.tbl_contains(_G.titles, "gitsigns: Reset hunk") and vim.tbl_contains(_G.titles, "gitsigns: Preview hunk")]],
+      timeout = 8000,
       note = "A4: the list offers Stage, Reset and Preview hunk",
     },
     {
@@ -135,7 +138,8 @@ return {
     },
     { keys = "lsa" },
     {
-      expect = [[vim.tbl_contains(_G.titles, "gitsigns: Stage hunk")]],
+      wait = [[vim.tbl_contains(_G.titles, "gitsigns: Stage hunk")]],
+      timeout = 8000,
       note = "A4: a deleted line at the start of the file still offers the hunk actions",
     },
     {
@@ -151,7 +155,8 @@ return {
     },
     { keys = "lsa" },
     {
-      expect = [[vim.tbl_contains(_G.titles, "gitsigns: Stage hunk")]],
+      wait = [[vim.tbl_contains(_G.titles, "gitsigns: Stage hunk")]],
+      timeout = 8000,
       note = "A4: a deleted line at the end of the file still offers the hunk actions",
     },
     {

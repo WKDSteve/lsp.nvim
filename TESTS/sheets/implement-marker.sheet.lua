@@ -90,8 +90,9 @@ return {
       note = "after the debounce there is still exactly one marker, on `interface Repo`",
     },
     {
-      lua = [[vim.api.nvim_buf_set_lines(0, 2, 3, false, { "interface Third { y: string }", "interface Repo2 { z: number }" })]],
-      note = "change the text: two more interfaces, one of them with `Repo` in its name",
+      -- typed, not set through the API: TextChanged fires from the editor's input loop
+      keys = "Gddointerface Third { y: string }<CR>interface Repo2 { z: number }<Esc>",
+      note = "change the text: the last line becomes two more interfaces, one of them with `Repo` in its name",
     },
     {
       wait = [[(function() local m = _G.markers() return #m == 2 end)()]],

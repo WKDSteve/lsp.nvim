@@ -64,6 +64,9 @@ return {
       "wsl",
       "tmux",
       "sh",
+      -- testing.pty reads the recording with `cat` and removes it with `rm` directly where tmux runs on Linux
+      "cat",
+      "rm",
     },
   },
   -- The runner counts which commands, keymaps and autocommands the specs exercise (docs/SURFACE.md of testing.nvim);

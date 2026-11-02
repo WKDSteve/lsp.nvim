@@ -20,7 +20,14 @@ vim.cmd("runtime! plugin/fzf-lua.lua")
 
 local S = dofile(root .. "/TESTS/support/stub_server.lua")
 
-local dir = vim.fn.tempname()
+-- a SHORT path on purpose: fzf cuts a long row ("sample..") and the checks read the row text, and a
+-- test runner points TMPDIR (so tempname()) deep into a sandbox
+local dir = ("/tmp/lsp-pty-%d"):format(vim.uv.os_getpid())
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    vim.fn.delete(dir, "rf")
+  end,
+})
 vim.fn.mkdir(dir, "p")
 local file = dir .. "/sample.zzz"
 vim.fn.writefile({
