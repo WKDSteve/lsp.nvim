@@ -157,9 +157,10 @@ describe("the text of :Lsp diag next|prev loc", function()
   end)
 
   it("does not claim the location list, which loc never touches", function()
-    if type(composer.registry) ~= "function" then
-      return pending("lib.nvim has no composer.registry")
-    end
+    assert(
+      type(composer.registry) == "function",
+      "lib.nvim lacks composer.registry: update lib.nvim, this case cannot run without it"
+    )
     local arg = list_arg()
     assert.is_truthy(arg, "the diag route has a `list` argument")
     local text = arg.enum_desc.loc
