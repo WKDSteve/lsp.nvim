@@ -26,4 +26,15 @@ arrives with is almost always "why is my server not running".
 
 - **Module:** `lspdoctor/`
 - **Config:** `lspdoctor`, `lspdoctor.probe_timeout`
+
+The `lspdoctor` options besides `probe_timeout`:
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `scratch_filetype` | `"markdown"` | Filetype of the scratch buffer a report is exported to |
+| `auto_open_scratch` | `true` | Open that scratch buffer by itself when a report is long (`scratch_threshold` lines, default `20`) |
+| `show_capabilities` | `true` | Include the capabilities section in the reports |
+| `show_workspace` | `true` | Include the workspace section |
+| `show_tools` | `true` | Include the section on the extra tools |
+| `show_conflicts` | `true` | Detect and show potential provider conflicts (formatting, diagnostics) |
 - **Commands:** `:LspDoctor[!] [mode]`, `:Lsp doctor [mode]`
