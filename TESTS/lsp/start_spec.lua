@@ -12,7 +12,18 @@
 --- that the answer comes from the same place `vim.lsp.enable` attaches from.
 --- Nothing is started: the configs name a command that is never run.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.usercmds.start", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@return table start, table supervisor
   local function reload()
     package.loaded["lsp.core.supervisor"] = nil

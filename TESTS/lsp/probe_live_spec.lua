@@ -47,7 +47,18 @@
 ---
 ---@see lsp.lspdoctor.probe
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.lspdoctor.probe (live)", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- Generous, because a cold `gopls` measured 15s here and a loaded CI runner
   -- is slower still; finite, because a hanging test is worse than a failing
   -- one -- it has no output at all and takes the whole suite with it.

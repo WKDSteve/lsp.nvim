@@ -168,7 +168,18 @@ local function with_stdpath_config(link, fn)
   assert(ok, err)
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.servers.lua_ls.rootresolver", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local resolve = require("lsp.servers.lua_ls.rootresolver")
 
   after_each(function()
@@ -317,6 +328,15 @@ describe("lsp.servers.lua_ls.rootresolver", function()
 end)
 
 describe("lsp.servers.marksman.rootresolver", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- A factory, not a resolver directly -- `require(...)()` builds the bound
   -- function, matching how `lsp.servers.marksman` actually calls it.
   local resolve = require("lsp.servers.marksman.rootresolver")()
@@ -351,6 +371,15 @@ describe("lsp.servers.marksman.rootresolver", function()
 end)
 
 describe("lsp.tools.eslint_prettier.core.find_root", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local find_root = require("lsp.tools.eslint_prettier.core.find_root")
 
   it("returns nil for an unnamed buffer instead of resolving from cwd", function()

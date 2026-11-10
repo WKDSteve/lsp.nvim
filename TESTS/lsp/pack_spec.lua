@@ -7,7 +7,18 @@
 --- that had asked for nvim-cmp. Selection lives in each spec's `enabled` now,
 --- and that is what these cases pin down.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.config.pack", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   --- Set `vim.g.lsp_nvim` for one case and reload the readers, which cache
   --- nothing but are required by the spec modules at load time.
   ---@param pack table|nil

@@ -29,7 +29,18 @@ local function sym(name, kind, from, to, children)
   return { name = name, kind = kind, range = range, selectionRange = range, children = children }
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.core.symbols", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   describe("normalize", function()
     it("turns nil, an empty answer and garbage into an empty tree", function()
       assert.are.same({}, symbols.normalize(nil))

@@ -83,7 +83,15 @@ describe("lsp.tools.lsp_signature.show_hover", function()
     assert.is_true(shown, "no preview was opened")
   end
 
+  local scratch_state = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+  ---@type fun() removes the buffers and windows of the case
+  local done
+  before_each(function()
+    done = scratch_state.track()
+  end)
+
   after_each(function()
+    done()
     package.loaded["lsp.tools.lsp_signature.open_floating_preview"] = nil
     package.loaded["lsp.tools.lsp_signature.format_hover"] = nil
     package.loaded["lsp.tools.lsp_signature.show_hover"] = nil

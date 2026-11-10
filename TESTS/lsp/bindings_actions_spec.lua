@@ -21,6 +21,7 @@
 ---    call raised and registered nothing.
 
 local KEYMAPS = require("lsp.config.KEYMAPS")
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
 
 --- Collect what the actions notify, without touching the real notifier.
 ---@return string[] said # "<level>: <message>", in order.
@@ -57,6 +58,14 @@ local function scratch(lines, pos)
 end
 
 describe("lsp.bindings.actions", function()
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local actions
 
   before_each(function()
@@ -208,13 +217,26 @@ describe("lsp.bindings.actions", function()
       end
       restore()
 
-      vim.cmd("silent! only")
+      -- some actions open their window from a scheduled callback: let those run inside the case, so its cleanup
+      -- (after_each) closes what they opened. No `:only` here: an action leaves its own window current, and `:only`
+      -- would close the window the case started in and keep that one.
+      vim.wait(100, function()
+        return false
+      end, 10)
       assert.are.same({}, raised)
     end)
   end)
 end)
 
 describe("lsp.bindings.keymaps.rebind_buffer_local", function()
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   --- An entry `default` has and `minimal` does not: the case where "is it in
   --- the preset" and "did `setup()` bind it" give different answers. `rename`
   --- by preference, because that is the pairing the LspAttach defender exists
@@ -303,6 +325,14 @@ describe("lsp.bindings.keymaps.rebind_buffer_local", function()
 end)
 
 describe("lsp.bindings.which_key", function()
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local which_key, cfg, registered
   local saved, saved_preload
 

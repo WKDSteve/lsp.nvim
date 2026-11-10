@@ -24,7 +24,18 @@
 local supervisor = require("lsp.core.supervisor")
 require("lsp.bindings.usrcmds").setup()
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe(":Lsp stop / :Lsp restart -> lsp.core.supervisor", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type { expect_stop: any[], start: { name: string, bufnr: integer }[] }
   local calls
   local original = {}

@@ -210,8 +210,11 @@ describe("usrcmds.legacy_aliases", function()
   describe("every route runs", function()
     ---@type integer|nil
     local base_win
+    ---@type { lines: integer, columns: integer } the screen size before the case, put back after it
+    local screen
 
     before_each(function()
+      screen = { lines = vim.o.lines, columns = vim.o.columns }
       -- `botright new` needs somewhere to go: several routes render into a
       -- scratch split, and the headless default of 24 lines runs out after a
       -- handful of them with `E36: Not enough room` -- which would read as a
@@ -233,6 +236,7 @@ describe("usrcmds.legacy_aliases", function()
           client:stop(true)
         end)
       end
+      vim.o.lines, vim.o.columns = screen.lines, screen.columns
     end)
 
     ---@type string[]

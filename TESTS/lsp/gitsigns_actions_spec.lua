@@ -8,6 +8,7 @@
 --- with the hunks gitsigns reports, not about gitsigns.
 
 local gs_actions = require("lsp.core.gitsigns_actions")
+local scratch = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
 
 describe("lsp.core.gitsigns_actions", function()
   ---@type integer
@@ -20,8 +21,11 @@ describe("lsp.core.gitsigns_actions", function()
   --- the cursor), and the line the cursor stood on when preview ran.
   ---@type { stage: table|nil, reset: table|nil, preview_line: integer|nil }
   local seen
+  ---@type fun() removes the buffers and windows of the case
+  local done
 
   before_each(function()
+    done = scratch.track()
     ran = {}
     seen = {}
     hunks = {}
@@ -54,6 +58,7 @@ describe("lsp.core.gitsigns_actions", function()
     for _, client in ipairs(vim.lsp.get_clients({ name = gs_actions.NAME })) do
       client:stop(true)
     end
+    done()
   end)
 
   describe("touches_hunk", function()

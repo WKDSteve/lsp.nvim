@@ -16,7 +16,18 @@
 --- test session and starts language servers; none of that is what these cases
 --- are about.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.init / lsp.health defects", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type { level: string, msg: string, advice: string[]|nil }[]
   local emitted = {}
 
@@ -583,6 +594,15 @@ describe("lsp.init / lsp.health defects", function()
 end)
 
 describe("the doctor modes :checkhealth advertises", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- `check_doctor` spelled the mode list out by hand and named five, omitting
   -- `probe` -- the one a user would not guess, and the only report that answers
   -- "are diagnostics actually arriving". It was the single place in the plugin

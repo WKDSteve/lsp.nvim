@@ -18,7 +18,18 @@
 --- report was not opened from -- are ones you would not want to reproduce for
 --- real anyway.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.health", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type { level: string, msg: string }[]
   local emitted = {}
 

@@ -14,7 +14,18 @@
 --- function exists. A report that raises is indistinguishable from one that
 --- was never wired up, and both look like a working plugin from the outside.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.lspdoctor", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@return table
   local function doctor()
     package.loaded["lsp.lspdoctor"] = nil

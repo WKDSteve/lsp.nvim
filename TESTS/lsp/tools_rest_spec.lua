@@ -22,7 +22,18 @@ local function project(files)
   return dir
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.tools.eslint_prettier.core.check_config", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local check
 
   before_each(function()
@@ -70,6 +81,15 @@ describe("lsp.tools.eslint_prettier.core.check_config", function()
 end)
 
 describe("lsp.tools.eslint_prettier", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local dir, buf, spawned, pending
 
   ---@return table usercmds module, wired to a stubbed spawn
@@ -199,6 +219,15 @@ describe("lsp.tools.eslint_prettier", function()
 end)
 
 describe("lsp.tools.deprecated_help", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local defaults
 
   before_each(function()
@@ -430,6 +459,15 @@ describe("lsp.tools.deprecated_help", function()
 end)
 
 describe("lsp.tools.deprecated_help display", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local defaults, help_float, lua_ls
 
   ---@return integer[]
@@ -617,6 +655,15 @@ describe("lsp.tools.deprecated_help display", function()
 end)
 
 describe("lsp.tools -- the commands, run", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- Nothing here raises on an empty unnamed buffer with no client attached,
   -- which is the state every one of these commands is reachable in. Kept as a
   -- case because it is the shape of failure this plugin keeps producing, and

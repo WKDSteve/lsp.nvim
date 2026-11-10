@@ -77,7 +77,18 @@ local function open_buf(path)
   return bufnr
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.core.workspace_folders", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved_get_clients
   ---@type table[]
   local clients = {}
@@ -163,6 +174,15 @@ describe("lsp.core.workspace_folders", function()
 end)
 
 describe("lsp.core.inlay_hints", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved_get_clients
   ---@type table[]
   local clients = {}
@@ -219,6 +239,15 @@ describe("lsp.core.inlay_hints", function()
 end)
 
 describe("lsp.core.workspace_diagnostics", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type string
   local tmp
   ---@type string
@@ -267,9 +296,8 @@ describe("lsp.core.workspace_diagnostics", function()
     vim.wait(500, function()
       return #vim.lsp.get_clients() == 0
     end)
-    for _, b in ipairs(vim.api.nvim_list_bufs()) do
-      pcall(vim.api.nvim_buf_delete, b, { force = true })
-    end
+    -- the case's buffers go with TESTS/support/scratch.lua; deleting every buffer here also took the one the editor
+    -- started with, and a fresh [No Name] took its place
     vim.fn.delete(tmp, "rf")
   end)
 
@@ -482,6 +510,15 @@ describe("lsp.core.workspace_diagnostics", function()
 end)
 
 describe("lsp.core.diagnostics", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- `vim.diagnostic.config()` is `for k, v in pairs(opts) do t[k] = v end`: a
   -- key it is not given keeps whatever the previous call left there. So a
   -- contribution of a top-level key the baseline does not carry survived

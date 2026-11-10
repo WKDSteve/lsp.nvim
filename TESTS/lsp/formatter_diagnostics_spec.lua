@@ -6,7 +6,18 @@
 --- Every case here was first watched failing against `git show HEAD:` of the
 --- file it covers; the numbers quoted in the comments are from those runs.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.formatter.conform.format_preserve_view", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved_conform
 
   before_each(function()
@@ -74,6 +85,15 @@ end)
 --- instead of the unprefixed `vim.g._formatter_api` global this used to be
 --- (PRIN-10).
 describe("lsp.formatter: get/set", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   before_each(function()
     package.loaded["lsp.formatter"] = nil
   end)
@@ -105,6 +125,15 @@ describe("lsp.formatter: get/set", function()
 end)
 
 describe("lsp.formatter LSP fallback", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local clients, buf, tmp
 
   --- A fake client that advertises formatting. `mute` never answers the
@@ -226,6 +255,15 @@ describe("lsp.formatter LSP fallback", function()
 end)
 
 describe("lsp.diagnostics.loclist.to_loc", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local ns, buf, tmp
 
   before_each(function()
@@ -288,6 +326,15 @@ describe("lsp.diagnostics.loclist.to_loc", function()
 end)
 
 describe("lsp.diagnostics.quickfix.to_qf", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local ns, a, b
 
   before_each(function()
@@ -375,6 +422,15 @@ describe("lsp.diagnostics.quickfix.to_qf", function()
 end)
 
 describe("lsp.diagnostics.commands", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   before_each(function()
     vim.g._diagnostics_cmds_enabled = nil
     require("lsp.diagnostics").setup()

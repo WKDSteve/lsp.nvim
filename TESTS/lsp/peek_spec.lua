@@ -39,7 +39,18 @@ local function target(path, line, char)
   }
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.core.peek", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type string
   local dir
   ---@type string
@@ -401,8 +412,9 @@ describe("lsp.core.peek", function()
       assert.are.equal(entry.buf, vim.api.nvim_get_current_buf())
       assert.are_not.equal(entry.buf, vim.api.nvim_win_get_buf(main))
 
+      -- back to the case's own window first: `:only` from the split would close that one and keep the new one
+      vim.api.nvim_set_current_win(main)
       vim.cmd("only!")
-      main = vim.api.nvim_get_current_win()
       local entry2 = peek.open(target(dst, 0))
       peek.take("split")
       assert.are.equal(2, #vim.api.nvim_tabpage_list_wins(0))
@@ -560,6 +572,15 @@ describe("lsp.core.peek", function()
 end)
 
 describe("lsp.core.peek.beacon", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   it("lights a line and puts the buffer back afterwards", function()
     vim.cmd("enew!")
     local buf = vim.api.nvim_get_current_buf()

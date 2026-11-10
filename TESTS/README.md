@@ -25,6 +25,30 @@ bash scripts/test.sh --json ir.json    # also write the machine-readable result
 
 The configuration is `.testing.lua`.
 
+### Nothing left behind
+
+Every guard of testing.nvim is an error, the state guard included: a case that leaves a buffer, a window, an
+autocmd, a keymap, a user command, an option or a `vim.g` value behind fails. A spec that makes buffers or windows
+cleans up with `TESTS/support/scratch.lua`:
+
+```lua
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
+describe("...", function()
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track() -- the case starts on a fresh empty buffer of its own
+  end)
+  after_each(function()
+    done_tracking() -- closes the case's windows, deletes its buffers, shows the old buffer again
+  end)
+```
+
+What `setup()` builds on purpose (its autocmd groups, user commands and keymaps, also the Neovim defaults it
+replaces) is named in `guards.state.keep` of `.testing.lua`, and so is what the editor's runtime files leave when a
+language spec loads them. A new command, group or keymap prefix of `setup()` goes there; anything else a spec leaves
+is a leak to fix in the spec.
+
 ## Lint
 
 CI runs `stylua --check` and `luacheck` before the suite, and luacheck is worth

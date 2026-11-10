@@ -5,7 +5,18 @@
 --- needs several clients behaving differently to say anything at all -- which
 --- is exactly the condition under which both were wrong.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.tools.ts_type_lookup.cmds", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved
 
   before_each(function()
@@ -207,6 +218,15 @@ describe("lsp.tools.ts_type_lookup.cmds", function()
 end)
 
 describe("lsp.tools.lsp_signature.fallback_providers", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@return table
   local function reload()
     package.loaded["lsp.tools.lsp_signature.fallback_providers"] = nil

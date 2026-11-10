@@ -27,7 +27,18 @@
 --- what is under test is the state the commands leave behind. `cmd` is a
 --- function, so no process is ever spawned.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.usercmds", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type integer[]
   local spawned = {}
 

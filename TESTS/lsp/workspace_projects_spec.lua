@@ -92,7 +92,18 @@ local function open_buf(path)
   return bufnr
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.core.workspace_projects", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   ---@type string
   local tmp
   ---@type string
@@ -129,9 +140,8 @@ describe("lsp.core.workspace_projects", function()
 
   after_each(function()
     vim.env.LSPTEST_PROJ = nil
-    for _, b in ipairs(vim.api.nvim_list_bufs()) do
-      pcall(vim.api.nvim_buf_delete, b, { force = true })
-    end
+    -- the case's buffers go with TESTS/support/scratch.lua; deleting every buffer here also took the one the editor
+    -- started with, and a fresh [No Name] took its place
     vim.fn.delete(tmp, "rf")
   end)
 

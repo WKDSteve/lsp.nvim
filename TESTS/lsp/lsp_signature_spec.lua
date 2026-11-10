@@ -9,7 +9,18 @@
 --- The clients are stubs. A real server would answer, eventually, and
 --- eventually is exactly what these cases are about.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.tools.lsp_signature", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local api = vim.api
 
   local saved_get_clients
@@ -413,6 +424,15 @@ describe("lsp.tools.lsp_signature", function()
 end)
 
 describe("lsp.tools.lsp_signature.format_hover", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- `show_hover` sends `textDocument/hover`. The formatter read
   -- `result.signatures`, which is a `signatureHelp` field, so it returned nil
   -- for every answer it could actually be given -- the documented hover
@@ -509,6 +529,15 @@ describe("lsp.tools.lsp_signature.format_hover", function()
 end)
 
 describe("lsp.tools.lsp_signature.format_signature_help", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- `signatures`, `parameters` and every other optional field in the
   -- `signatureHelp` protocol are all legal to send as JSON `null`, which
   -- decodes to `vim.NIL` -- userdata, not Lua `nil`. Both sites this module

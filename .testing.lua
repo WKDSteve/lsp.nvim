@@ -31,8 +31,8 @@ return {
   -- servers_languages_spec.lua "stops collecting at max_files" writes 600 files and waits for the
   -- word-cache scan (vim.wait up to 30 s); on the Windows CI runner that exceeds the default 10 s.
   timeouts = { case_ms = 30000 },
-  -- Safety nets (docs/GUARDS.md of testing.nvim). The suite passes fs, scheduled_error, prompt,
-  -- deprecation and process_net cleanly, so they are errors; only the state guard keeps findings.
+  -- Safety nets (docs/GUARDS.md of testing.nvim). Every guard is an error: the suite leaves nothing behind but what
+  -- setup() builds on purpose, which the state guard is told about below.
   guards = {
     fs = "error",
     scheduled_error = "error",
@@ -40,12 +40,67 @@ return {
     deprecation = "error",
     -- Real processes are started on purpose (see guard_allow.spawn); anything else is an error.
     process_net = "error",
-    -- warn, not off: the package.preload, env and lua_globals leaks the guard found are fixed. The
-    -- ~1550 remaining warnings are plugin setup() state (autocmds, user commands, keymaps, buffers,
-    -- windows, highlight groups, vim.g._lsp_enabled_* of vim.lsp.enable()) that the specs create by
-    -- design; `isolated = "file"` contains it per spec file. A per-category switch is not available
-    -- in .testing.lua (only a mode string per guard), so that noise cannot be filtered out here.
-    state = "warn",
+    -- The specs clean up the buffers and windows they make (TESTS/support/scratch.lua). What is left is what
+    -- lsp.nvim's setup() and the editor's runtime create by design, named here so that anything else is an error:
+    state = {
+      mode = "error",
+      -- setup() (the specs call it, most in before_each) registers these: autocmd groups, user commands and keymap
+      -- left-hand sides, matched as prefixes. The keymaps are the catalogue of lsp.config.KEYMAPS (the leader ones,
+      -- `ls*`, `[d`/`]d`, `[w`/`]w`, `<M-s>`, `<C-b>`) and the defaults of Neovim it replaces.
+      keep = {
+        -- autocmd groups
+        "lsp_nvim",
+        "Lsp",
+        "Lang",
+        "Astro",
+        "Md",
+        "Mason",
+        "Tools",
+        "DeprecatedHelp",
+        -- user commands (Lsp, Lang, Astro, Md and Mason are above)
+        "Diag",
+        "LuaLs",
+        "TypeDef",
+        "Cmp",
+        "Eslint",
+        "Lint",
+        "Prettier",
+        "ToggleLintFormatOnSave",
+        -- keymaps
+        "\\",
+        "ls",
+        "[d",
+        "]d",
+        "[w",
+        "]w",
+        "<M-s>",
+        "<C-B>",
+        "<C-b>",
+        -- Neovim's own defaults setup() replaces with its actions (`grn`, `gra`, `grt`, ..., `[q`/`]q`, `[l`/`]l`)
+        "gr",
+        "[q",
+        "]q",
+        "[l",
+        "]l",
+      },
+      -- what lib.nvim's which-key bridge keeps pending, and the autocmd of Neovim's own rust ftplugin
+      ignore_groups = { "lib.nvim.which_key.", "rust.vim." },
+      -- `_diagnostics_cmds_enabled` is lsp.diagnostics.commands' own once-only flag; the rest come from the editor's
+      -- runtime files the language specs load (javaformat autoload, html indent, astro and help ftplugins)
+      ignore_vars = {
+        "_diagnostics_cmds_enabled",
+        "loaded_javaformat",
+        "html_indent_",
+        "astro_",
+        "help_example_languages",
+      },
+      -- the java ftplugin adds .class to the global 'suffixes'
+      ignore_options = { "suffixes" },
+      categories = {
+        -- loading a filetype's syntax file defines hundreds of groups, and setup() defines its Kit*/LspNvim* ones
+        highlights = "off",
+      },
+    },
   },
   guard_allow = {
     spawn = {

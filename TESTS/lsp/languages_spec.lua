@@ -75,7 +75,18 @@ end
 --- First in the file on purpose: `vim.filetype.add` is global and permanent
 --- for the session, so the "before" half of the `wat` case only means anything
 --- while nothing has called `enable_all()` yet.
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.languages.enable_all", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   -- `vim.filetype.add({ extension = { wat = "wasm" } })` overrode Neovim's own
   -- detection. Neovim answers `wat` for `*.wat` and ships `syntax/wat.vim`,
   -- `ftplugin/wat.vim` and `indent/wat.vim` for it; it ships nothing for
@@ -130,6 +141,15 @@ end)
 -- ===========================================================================
 
 describe("lsp.languages.app.java", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved_util
 
   before_each(function()
@@ -240,6 +260,15 @@ end)
 -- ===========================================================================
 
 describe("lsp.languages.app.dart", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local starting_cwd
 
   before_each(function()
@@ -307,10 +336,18 @@ describe("lsp.languages.app.dart", function()
     local dart = require("lsp.languages.app.dart")
     dart.enable()
     with_window_buffer({ "void main() {}" }, function(bufnr)
+      local win = vim.api.nvim_get_current_win()
       vim.bo[bufnr].filetype = "dart"
       local lhs = lhs_by_desc(bufnr, "n", "Flutter: run (or focus)")
       feed(lhs)
       vim.wait(50)
+      -- `flutter run` opens its terminal in a split and focuses it. Closed again here, so the buffer is deleted from
+      -- the case's own window: deleting a buffer closes every other window that shows it, and that would have been
+      -- the case's window, leaving only the split.
+      local run_win = vim.api.nvim_get_current_win()
+      if run_win ~= win then
+        pcall(vim.api.nvim_win_close, run_win, true)
+      end
     end)
 
     vim.fn.jobstart = orig_jobstart
@@ -421,6 +458,15 @@ end)
 -- ===========================================================================
 
 describe("lsp.languages.webdev.astro", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved = {}
   local cwd
   local notes = {}
@@ -812,6 +858,15 @@ end)
 -- ===========================================================================
 
 describe("lsp.languages.documentation.markdown", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved_notify
 
   before_each(function()

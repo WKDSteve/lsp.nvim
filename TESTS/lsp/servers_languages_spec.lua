@@ -5,7 +5,18 @@
 --- project once and holds the result. Both were correct about the data and
 --- wrong about its extent.
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.servers.marksman.diagnostics_handler", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   local saved
 
   before_each(function()
@@ -116,6 +127,15 @@ describe("lsp.servers.marksman.diagnostics_handler", function()
 end)
 
 describe("lsp.languages.documentation.markdown_words", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   after_each(function()
     package.loaded["lsp.languages.documentation.markdown_words"] = nil
   end)

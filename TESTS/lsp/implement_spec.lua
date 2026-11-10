@@ -22,7 +22,18 @@ local function sym(name, kind, line)
   return { name = name, kind = kind, range = range, selectionRange = range }
 end
 
+local tracker = dofile(vim.fn.getcwd() .. "/TESTS/support/scratch.lua")
+
 describe("lsp.core.implement", function()
+  -- the buffers and windows a case makes go with it (TESTS/support/scratch.lua)
+  local done_tracking
+  before_each(function()
+    done_tracking = tracker.track()
+  end)
+  after_each(function()
+    done_tracking()
+  end)
+
   after_each(function()
     implement.detach()
     symbols.reset()
@@ -215,15 +226,15 @@ describe("lsp.core.implement", function()
       sent = {}
       asked = {}
       ns = vim.api.nvim_create_namespace("lsp_nvim_implement")
-      -- `setup()` refreshes every loaded buffer, so the ones earlier cases left
-      -- behind would answer to this case's stub and inflate its request count.
+      -- `setup()` refreshes every loaded buffer, so any other loaded buffer would answer to this case's stub and
+      -- inflate its request count. Unloaded, not deleted: the editor's own buffer has to survive the case (deleting
+      -- the last one makes a fresh [No Name]), and TESTS/support/scratch.lua removes what the case made.
       vim.cmd("enew!")
       for _, b in ipairs(vim.api.nvim_list_bufs()) do
         if b ~= vim.api.nvim_get_current_buf() then
-          pcall(vim.api.nvim_buf_delete, b, { force = true })
+          pcall(vim.api.nvim_buf_delete, b, { unload = true })
         end
       end
-      vim.cmd("enew!")
       bufnr = vim.api.nvim_get_current_buf()
       vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
         "interface Repo {}",
