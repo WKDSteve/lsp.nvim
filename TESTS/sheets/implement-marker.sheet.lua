@@ -5,6 +5,7 @@
 -- `textDocument/implementation` (one implementation for `Repo`, none for `Lonely`).
 return {
   id = "lsp.implement-marker",
+  feature = "lsp.implementation-markers",
   title = "lsp.nvim: the implementation marker follows its interface, also while typing in Insert mode",
   task = "lsp.nvim/live-check-lspsaga-replacements",
   engine = "rpc",

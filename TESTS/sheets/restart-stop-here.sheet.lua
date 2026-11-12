@@ -5,6 +5,7 @@
 -- language server on the machine (the filetype `stubft` has none of lsp.nvim's own).
 return {
   id = "lsp.restart-stop-here",
+  feature = "lsp.restart",
   title = "lsp.nvim: :LspRestartHere / :LspStopHere count real servers only, no winbar on a text file",
   task = "lsp.nvim/live-check-lspsaga-replacements",
   engine = "rpc",

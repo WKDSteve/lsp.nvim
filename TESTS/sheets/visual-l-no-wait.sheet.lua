@@ -5,6 +5,7 @@
 -- has not moved after 400 ms.
 return {
   id = "lsp.visual-l-no-wait",
+  feature = "lsp.code-actions",
   title = "lsp.nvim: l in Visual mode does not wait for timeoutlen",
   task = "lsp.nvim/live-check-lspsaga-replacements",
   engine = "rpc",

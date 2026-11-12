@@ -5,6 +5,7 @@
 -- What stays by hand: the glyphs in the font of the real terminal (the snapshot is characters, not pixels).
 return {
   id = "lsp.winbar-separator",
+  feature = "lsp.breadcrumb",
   title = "lsp.nvim: the winbar separator is the single character U+203A between clean chips",
   task = "lsp.nvim/live-check-lspsaga-replacements",
   engine = "rpc",

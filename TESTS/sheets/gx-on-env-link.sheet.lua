@@ -7,6 +7,7 @@
 -- Not covered (stays by hand in the task): the real external program opening the target.
 return {
   id = "lsp.gx-env-link",
+  feature = "lsp.env-links",
   title = "lsp.nvim: gx on an env link hands the target to vim.ui.open",
   task = "lsp.nvim/live-check-lspsaga-replacements",
   engine = "rpc",

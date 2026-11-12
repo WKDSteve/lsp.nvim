@@ -4,6 +4,7 @@
 -- peek is open the buffer is unlisted (it is unloaded again when the peek closes).
 return {
   id = "lsp.peek-take-over",
+  feature = "lsp.peek",
   title = "lsp.nvim: a peeked buffer taken over with <C-o>, <C-v>, <C-x> or <C-t> is listed",
   task = "lsp.nvim/live-check-lspsaga-replacements",
   engine = "rpc",
