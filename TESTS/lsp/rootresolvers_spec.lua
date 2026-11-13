@@ -82,11 +82,10 @@ end
 --- Skip the current case because this machine cannot create a symlink -- and
 --- say so loudly enough that the skip cannot be mistaken for a pass.
 ---
---- Same rules as `probe_live_spec.lua`, for the same reason: plenary's
---- `pending` prints `Pending` and the run still tallies the case under
---- `Success`, so a gate that quietly skips itself reports confidence it never
---- earned. So this names the reason, writes it to stderr as well as into the
---- `PENDING` line, and **fails instead of skipping under `CI` on any platform
+--- Same rules as `probe_live_spec.lua`, for the same reason: a `pending`
+--- case leaves the tally green, so a gate that quietly skips itself reports
+--- confidence it never earned. So this names the reason, writes it to stderr
+--- as well as into the runner's pending line, and **fails instead of skipping under `CI` on any platform
 --- that is not Windows**.
 ---
 --- The gate is on whether a symlink can actually be *made*, not on the

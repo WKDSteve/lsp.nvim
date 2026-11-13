@@ -17,11 +17,11 @@
 --- Not every machine has a language server installed. The case therefore
 --- skips -- but a gate that quietly skips itself and still counts as green is
 --- worse than no gate, because it reports confidence it never earned. And
---- plenary's `pending` is exactly that shape: it prints `Pending` and the run
---- still tallies the case under `Success`. So the skip:
+--- a `pending` case is exactly that shape: the run's tally stays green and
+--- the case is easy to read past. So the skip:
 ---
 --- * names every server it looked for and what was missing about each,
---- * goes to stderr as well as into plenary's `PENDING` line, so it is visible
+--- * goes to stderr as well as into the runner's pending line, so it is visible
 ---   in a CI log that nobody scrolls through,
 --- * **fails instead of skipping under `CI`**, because the workflow installs
 ---   a server for this case. There, "no server found" is not a machine that
@@ -233,8 +233,8 @@ describe("lsp.lspdoctor.probe (live)", function()
   --- skipping it would leak a temp tree per run rather than raise.
   ---
   --- Only what this case made. An earlier version deleted every named buffer
-  --- in the process, which is fine under `PlenaryBustedDirectory` -- one nvim
-  --- per spec file -- and destructive anywhere else.
+  --- in the process, which is fine with one nvim per spec file
+  --- (`isolated = "file"`) and destructive anywhere else.
   after_each(function()
     if client_id then
       local client = vim.lsp.get_client_by_id(client_id)
@@ -263,7 +263,7 @@ describe("lsp.lspdoctor.probe (live)", function()
         "no language server for the live probe -- this gate did NOT run."
         .. " Looked for: %s. Install any one of them to exercise it."
       ):format(missing)
-      -- Both channels on purpose: plenary's PENDING line names the case,
+      -- Both channels on purpose: the runner's pending line names the case,
       -- stderr survives a CI log that only errors get read out of.
       io.stderr:write("\n[probe_live] SKIPPED: " .. message .. "\n")
       local ci = vim.env.CI
@@ -337,9 +337,8 @@ describe("lsp.lspdoctor.probe (live)", function()
 
     -- By id, not `report.clients[1]`, and not by asserting there is exactly
     -- one. The seed buffer can legitimately carry clients this case did not
-    -- start: `:PlenaryBustedFile` and the `<Plug>` mappings spawn their child
-    -- *without* `minimal_init`, so the user's own config runs and attaches its
-    -- own servers. Pinning the count would turn that into a red case about
+    -- start: a spec run by hand in the developer's own editor has the user's
+    -- config loaded, which attaches its own servers. Pinning the count would turn that into a red case about
     -- nothing -- the exact failure shape this file exists to rule out.
     local mine
     for _, entry in ipairs(report.clients) do

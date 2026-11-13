@@ -14,11 +14,13 @@ describe("lsp.diagnostics.util severity", function()
 
   describe("parse_severity", function()
     it("treats nil and empty as 'all severities', not as an error", function()
-      for _, input in ipairs({ nil, "" }) do
-        local sev, err = util.parse_severity(input)
-        assert.is_nil(sev)
-        assert.is_nil(err)
-      end
+      -- Two explicit calls: `ipairs({ nil, "" })` stops at the leading nil and would test neither.
+      local sev, err = util.parse_severity(nil)
+      assert.is_nil(sev)
+      assert.is_nil(err)
+      sev, err = util.parse_severity("")
+      assert.is_nil(sev)
+      assert.is_nil(err)
     end)
 
     it("accepts 'all' as an explicit spelling of the same thing", function()

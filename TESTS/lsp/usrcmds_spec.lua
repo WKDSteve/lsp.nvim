@@ -21,8 +21,8 @@ local function has(list, value)
   return vim.tbl_contains(list, value)
 end
 
--- Registered once, at load time: plenary's busted has no `setup()` block, and
--- the verb has to exist before any completion assertion below runs.
+-- Registered once, at load time: the verb has to exist before any completion
+-- assertion below runs.
 local registered = usrcmds.setup()
 
 describe("lsp.bindings.usrcmds", function()

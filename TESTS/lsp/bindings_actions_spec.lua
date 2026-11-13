@@ -105,8 +105,8 @@ describe("lsp.bindings.actions", function()
       local said, restore = capture_notify()
 
       -- `restore()` must run even if an assertion inside the loop fails --
-      -- otherwise the capturing stub leaks into every later spec of this
-      -- shared plenary run (TESTS/lsp is one process).
+      -- otherwise the capturing stub leaks into every later case of this
+      -- spec file (the file runs in one nvim).
       local body_ok, body_err = pcall(function()
         for _, case in ipairs({
           { name = "blank line", lines = { "", "local myvar = 1" }, pos = { 1, 0 } },

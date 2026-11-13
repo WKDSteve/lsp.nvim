@@ -35,9 +35,14 @@ describe("lsp.core.capabilities", function()
       -- error branch below guards against a contributor *removing* the
       -- section, which is the case that actually looks like nothing.
       local _, warnings = capabilities.get({})
+      assert.are.equal("table", type(warnings))
+      local errors = {}
       for _, w in ipairs(warnings) do
-        assert.are_not.equal("error", w.level, "unexpected error: " .. tostring(w.msg))
+        if w.level == "error" then
+          errors[#errors + 1] = tostring(w.msg)
+        end
       end
+      assert.are.same({}, errors)
     end)
 
     it("treats a nil contributor list like an empty one", function()
