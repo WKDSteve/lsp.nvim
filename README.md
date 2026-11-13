@@ -87,3 +87,17 @@ says what each one answers.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 lsp.nvim is released under the [MIT License](https://opensource.org/licenses/MIT).
+
+<!-- connections:begin (written by the app-icons tool of the workshop; change integrations.json there, not this block) -->
+## Connections
+
+![lsp.nvim: what it uses and what uses it](assets/graphs/lsp.nvim.png)
+
+**Uses**
+
+- [docmap.nvim](https://github.com/WKDSteve/docmap.nvim): The call hierarchy of lsp.nvim uses docmap.nvim and loads it on demand, also from a lazy.nvim spec. ([picture](assets/graphs/pair/lsp.nvim--docmap.nvim.png))
+- [gopath.nvim](https://github.com/WKDSteve/gopath.nvim): lsp.nvim resolves an environment reference in a path to the real path with gopath.nvim (`gopath.resolve_text`). ([picture](assets/graphs/pair/lsp.nvim--gopath.nvim.png))
+- [hover.nvim](https://github.com/WKDSteve/hover.nvim): The signature help of lsp.nvim uses the float of hover.nvim (`hover.float`) when it is installed. ([picture](assets/graphs/pair/lsp.nvim--hover.nvim.png))
+- [ui.nvim](https://github.com/WKDSteve/ui.nvim): The root-scope and workspace pickers of lsp.nvim are built on `ui.kit.select` of ui.nvim. ([picture](assets/graphs/pair/lsp.nvim--ui.nvim.png))
+- [lib.nvim](https://github.com/WKDSteve/lib.nvim): the shared base of the plugins.
+<!-- connections:end -->
