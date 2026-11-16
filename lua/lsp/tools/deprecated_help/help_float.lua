@@ -96,7 +96,8 @@ end
 ---@param lines string[]
 ---@param tag string
 ---@param max_lines? integer
----@return string[]|nil
+---@return string[]|nil entry
+---@return integer|nil lnum the line of `lines` that defines the tag
 function M.section(lines, tag, max_lines)
   max_lines = max_lines or M.MAX_LINES
   local needle = "*" .. tag .. "*"
@@ -125,7 +126,7 @@ function M.section(lines, tag, max_lines)
       end
       out[#out + 1] = line
     end
-    return out
+    return out, start
   end
 
   local seen_text = first:gsub(TAG_DEF, ""):match("%S") ~= nil
@@ -150,34 +151,37 @@ function M.section(lines, tag, max_lines)
   while #out > 1 and is_blank(out[#out]) do
     out[#out] = nil
   end
-  return out
+  return out, start
 end
 
 --- The help entry of `symbol`, trying each candidate tag and then the tag
 --- `:help` itself would pick, or nil.
 ---@param symbol string
----@return string[]|nil
+---@return string[]|nil entry
+---@return string|nil file the help file that has it
+---@return string|nil tag the tag that matched
+---@return integer|nil lnum the line of `file` that defines the tag
 function M.lookup(symbol)
   local cache = {}
   ---@param tags string[]
-  ---@return string[]|nil
+  ---@return string[]|nil, string|nil, string|nil, integer|nil
   local function first_entry(tags)
     local files = M.find_tags(tags)
     for _, tag in ipairs(tags) do
       local file = files[tag]
       if file and vim.fn.filereadable(file) == 1 then
         cache[file] = cache[file] or vim.fn.readfile(file)
-        local lines = M.section(cache[file], tag)
+        local lines, lnum = M.section(cache[file], tag)
         if lines then
-          return lines
+          return lines, file, tag, lnum
         end
       end
     end
     return nil
   end
-  local lines = first_entry(M.candidates(symbol))
+  local lines, file, tag, lnum = first_entry(M.candidates(symbol))
   if lines then
-    return lines
+    return lines, file, tag, lnum
   end
   -- Only on a miss: `getcompletion` walks every help tag.
   local ok, completion = pcall(vim.fn.getcompletion, symbol, "help")
@@ -195,13 +199,19 @@ function M.show(symbol)
   if not lines then
     return false
   end
+  M.open(lines)
+  return true
+end
+
+--- Show help-formatted `lines` in a float; focus stays where it is.
+---@param lines string[]
+function M.open(lines)
   vim.lsp.util.open_floating_preview(lines, "help", {
     focus = false,
     focus_id = "lsp_deprecated_help",
     max_width = math.max(40, math.floor(vim.o.columns * 0.8)),
     max_height = math.max(5, math.floor(vim.o.lines * 0.5)),
   })
-  return true
 end
 
 return M

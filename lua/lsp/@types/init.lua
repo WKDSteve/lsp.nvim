@@ -181,9 +181,13 @@ require("lsp.@types.subsystem")
 
 ---@class LspNvim.DeprecatedHelpTool: LspNvim.Tool
 ---@field display "hover"|"help"
+---@field word_keymap string|false
+---@field help_pages table<string, string[]>
 
 ---@class LspNvim.DeprecatedHelpOpts: LspNvim.ToolOpts
----@field display? "hover"|"help" # Show the help of a deprecated symbol in a float ("hover") or with `:help` ("help").
+---@field display? "hover"|"help" # Show the help of a deprecated symbol, or of the word under the cursor, in a float ("hover") or with `:help` ("help").
+---@field word_keymap? string|false # Normal-mode key for the help of the word under the cursor (same as `:Lsp help`); `false` (default) binds none.
+---@field help_pages? table<string, string[]> # Per filetype, help files (on the runtimepath as `doc/<name>`, or paths) searched first for the word under the cursor, e.g. `{ lua = { "luvref" } }`.
 
 ---@class LspNvim.ToolsOpts
 ---@field eslint_prettier? LspNvim.ToolOpts

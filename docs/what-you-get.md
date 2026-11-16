@@ -15,6 +15,7 @@
 | `:Lsp winbar …` | The LSP breadcrumb in the winbar, same argument pair |
 | `:Lsp implement …` | Implementation markers on interfaces (off by default), same argument pair |
 | `:Lsp peek [kind]` | The definition (or type, implementation, declaration) in a floating, editable window |
+| `:Lsp help [word]` | The help of the word under the cursor in a float, per-filetype help pages first |
 | `:Lsp autorestart` | Whether a crashed server comes back, and why the last attempt failed |
 | `:Lsp log` | The LSP log |
 

@@ -8,7 +8,7 @@ The full table — every route, every argument, every legacy alias — is in
 ```
 :Lsp status | servers | info | health | doctor
 :Lsp start | stop | restart | force-restart | recover
-:Lsp format | diag | workspace | root | hints | lightbulb | winbar | implement | peek
+:Lsp format | diag | workspace | root | hints | lightbulb | winbar | implement | peek | help
 :Lsp autorestart | log
 ```
 
@@ -54,7 +54,10 @@ is fresh; `implement status` says which client would answer
 `textDocument/implementation` and how many markers are on screen. Both need a
 filetype for `clear`, as the other two do. `:Lsp peek [kind]` opens a floating,
 editable peek of a definition (the default), type definition, implementation or
-declaration — the last two have no key, only this route.
+declaration — the last two have no key, only this route. `:Lsp help [word]`
+shows the help entry of the word under the cursor in a float, searching the
+help pages configured for the filetype (`tools.deprecated_help.help_pages`)
+before the `:help` tags; with `display = "help"` it jumps into the match.
 
 `:Lsp autorestart` controls whether a crashed server is brought back on its
 own. Its `status` is the one worth reading after something went wrong: it names

@@ -309,7 +309,12 @@ local function setup_tools(cfg)
   end
   if tools.deprecated_help.enable then
     step("tools.deprecated_help", function()
-      require("lsp.tools.deprecated_help").setup({ display = tools.deprecated_help.display })
+      local dh = tools.deprecated_help
+      require("lsp.tools.deprecated_help").setup({
+        display = dh.display,
+        word_keymap = dh.word_keymap,
+        help_pages = dh.help_pages,
+      })
     end)
   end
 end

@@ -713,6 +713,23 @@ function M.setup()
         end,
       },
 
+      -- ------------------------------------------------------------ help
+      {
+        path = { "help" },
+        args = {
+          {
+            name = "word",
+            type = "STRING",
+            optional = true,
+            desc = "Word to look up (default: the word under the cursor)",
+          },
+        },
+        desc = "Help for the word under the cursor, in a float (tools.deprecated_help)",
+        run = function(ctx)
+          require("lsp.tools.deprecated_help.word").show(ctx.args.word)
+        end,
+      },
+
       -- ---------------------------------------------------------- diagnostics
       {
         path = { "diag" },

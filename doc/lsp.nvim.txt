@@ -192,7 +192,8 @@ Defaults (excerpt -- the full table is `lua/lsp/config/DEFAULTS.lua`): >lua
         eslint_prettier = { enable = true, filetypes = { ... } },
         lsp_signature = { enable = true, border = "rounded" },
         ts_type_lookup = { enable = true },
-        deprecated_help = { enable = true, display = "hover" },
+        deprecated_help = { enable = true, display = "hover",
+                            word_keymap = false, help_pages = {} },
       },
       languages = { enable = true, env_links = true },
       completion = {
@@ -556,7 +557,20 @@ tools.deprecated_help.display ("hover"|"help")
                                   How the help of a deprecated symbol is
                                   shown: "hover" (default) opens its entry
                                   in a float and keeps the focus, "help"
-                                  runs `:help`.
+                                  runs `:help`. The same for `:Lsp help`.
+tools.deprecated_help.word_keymap (string|false)
+                                  Normal-mode key for the help of the word
+                                  under the cursor, the same as
+                                  `:Lsp help [word]`. Default false: no key.
+tools.deprecated_help.help_pages (table<string, string[]>)
+                                  Per filetype, help files searched first
+                                  for that word: a name under `doc/` on the
+                                  runtimepath (`.txt` optional) or a path,
+                                  e.g. `{ lua = { "luvref" } }`. A page is
+                                  searched for the word as a tag and for a
+                                  tag ending in it (`fs_stat` finds
+                                  `uv.fs_stat()`). With display "help" the
+                                  match is opened at its tag.
 languages.enable      (boolean)   Apply the filetype-specific setup under
                                   `lsp/languages/**` before the servers are
                                   registered.
@@ -942,6 +956,15 @@ closed unless it says otherwise.
                     key. Inside the float `q` closes, `<C-o>` takes the buffer
                     into the window you came from, `<C-v>`/`<C-x>` into a
                     split and `<C-t>` into a tab (`peek.keys`).
+
+    :Lsp help [word]                                                   *:Lsp-help*
+                    Help for the word under the cursor, or for [word]: the
+                    dotted name (`vim.api.nvim_buf_get_lines`), then the plain
+                    word. Searches `tools.deprecated_help.help_pages` of the
+                    filetype first, then the `:help` tags. Shown in a float, or
+                    with `display = "help"` opened at the match. Says so when
+                    nothing is found. Key: `tools.deprecated_help.word_keymap`
+                    (none by default).
 
     :Lsp log open                                          *:Lsp-log-open*
                     Open Neovim's LSP log file (|vim.lsp.get_log_path()|) in a

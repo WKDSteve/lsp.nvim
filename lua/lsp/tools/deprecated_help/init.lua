@@ -1,8 +1,10 @@
 ---@module 'lsp.tools.deprecated_help'
 --- Initialization entry for the modularized deprecated-warning helper.
 --- Example usage:
----   require('myplugin.init').setup({
+---   require("lsp.tools.deprecated_help").setup({
 ---     keymap = "<leader>lh",
+---     word_keymap = "<leader>K",           -- help for the word under the cursor
+---     help_pages = { lua = { "luvref" } }, -- extra pages searched per filetype
 ---   })
 ---
 --- This file composes modules and installs the common wrapper.
@@ -11,6 +13,7 @@ local lsp_common = require("lsp.tools.deprecated_help.lsp_common")
 local lua_ls = require("lsp.tools.deprecated_help.lsp.lua_ls.lua_ls")
 local publish_diagnostics = require("lsp.tools.deprecated_help.lsp.lua_ls.publish_diagnostics")
 local defaults = require("lsp.tools.deprecated_help.defaults")
+local word = require("lsp.tools.deprecated_help.word")
 
 local M = {}
 
@@ -33,6 +36,9 @@ function M.setup(opts)
     display = opts.display,
   })
   lua_ls.setup(lua_ls_opts)
+
+  -- `:help` for the word under the cursor; no key unless one is configured
+  word.setup({ word_keymap = opts.word_keymap, help_pages = opts.help_pages })
 
   -- install the common publishDiagnostics wrapper
   lsp_common.setup()

@@ -401,7 +401,10 @@ local DEFAULTS = {
     },
     lsp_signature = { enable = true, border = "rounded" },
     ts_type_lookup = { enable = true },
-    deprecated_help = { enable = true, display = "hover" },
+    -- `word_keymap`: a key for the help of the word under the cursor (also
+    -- `:Lsp help`); none by default. `help_pages`: extra help files searched
+    -- first, per filetype (`{ lua = { "luvref" } }`).
+    deprecated_help = { enable = true, display = "hover", word_keymap = false, help_pages = {} },
   },
 
   -- Filetype-specific quality-of-life setup under `lsp/languages/**`, applied

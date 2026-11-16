@@ -11,6 +11,11 @@ deprecation help.
 - **Module:** `tools/`
 - **Config:** `tools.<name>.enable`
 
+The deprecation help also answers `:Lsp help [word]`: the help entry of the
+word under the cursor in the same float, searching the help pages named per
+filetype (`tools.deprecated_help.help_pages`, e.g. `{ lua = { "luvref" } }`)
+before the `:help` tags. A key for it only with `tools.deprecated_help.word_keymap`.
+
 ## One picker, not two
 
 The four picker keymaps (`<leader>dos`, `<leader>wos`, `<leader>do`,

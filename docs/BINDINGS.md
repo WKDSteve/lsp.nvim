@@ -197,9 +197,13 @@ unless `usrcmds.enable = false`.
 | `:Lsp winbar` | `[toggle\|on\|off\|status\|clear] [filetype]` | LSP breadcrumb in the winbar, globally or for one filetype (default `toggle`) |
 | `:Lsp implement` | `[toggle\|on\|off\|status\|clear] [filetype]` | Implementation markers on interfaces, globally or for one filetype (default `toggle`) |
 | `:Lsp peek` | `[definition\|type_definition\|implementation\|declaration]` | Peek in a floating, editable window (default `definition`) |
+| `:Lsp help` | `[word]` | Help for the word under the cursor (or `[word]`): the `help_pages` of the filetype first, then `:help` tags; shown as `tools.deprecated_help.display` says |
 | `:Lsp autorestart` | `[toggle\|on\|off\|status]` | Bring a crashed server back automatically (default `toggle`) |
 | `:Lsp log open` | — | Open Neovim's LSP log file in a split |
 | `:Lsp log level` | `{trace\|debug\|info\|warn\|error\|off}` | Set the LSP log level |
+
+`:Lsp help` has a key only when `tools.deprecated_help.word_keymap` names one
+(Normal mode, global); there is no default, so it is not in the catalogue above.
 
 None of these takes a range: they act on the current buffer or on global
 state, neither of which a line range narrows.
