@@ -171,7 +171,11 @@ describe("lsp.tools.deprecated_help.word", function()
     word.setup({ help_pages = { [""] = { path } } })
     buffer("frobnicate", 0)
     assert.is_true(word.show())
-    assert.are.equal(path, vim.fs.normalize(vim.api.nvim_buf_get_name(0)))
+    -- realpath: macOS hands out its temp dir as /var/... and resolves it to /private/var/...
+    local real = function(p)
+      return vim.fs.normalize(vim.uv.fs_realpath(p) or p)
+    end
+    assert.are.equal(real(path), real(vim.api.nvim_buf_get_name(0)))
     assert.are.equal("help", vim.bo.filetype)
     assert.is_false(vim.bo.modifiable)
     assert.are.equal(4, vim.api.nvim_win_get_cursor(0)[1])
