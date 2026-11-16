@@ -109,6 +109,11 @@ return {
     docs = "docs/FEATURES/TOOLS.md",
   },
   {
+    id = "lsp.help-word",
+    title = ":Lsp help and its key show the help of the word under the cursor, per-filetype help pages first",
+    docs = "docs/FEATURES/TOOLS.md",
+  },
+  {
     id = "lsp.completion-source",
     title = "A completion source for nvim-cmp or blink completes dotted plugin names, ranked by use",
     docs = "docs/FEATURES/TOOLS.md",
