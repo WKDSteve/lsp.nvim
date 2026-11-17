@@ -692,6 +692,31 @@ local function normalize_all(cfg)
   end
   normalize_workspace(cfg)
 
+  -- Each tool is a `{ enable, ... }` table that setup() and the binder index
+  -- unguarded. `tools.lsp_signature = false` -- the conventional "off" spelling
+  -- here -- reached them as a boolean and `require("lsp").setup()` died on
+  -- "attempt to index field 'lsp_signature' (a boolean value)". A boolean now
+  -- means `{ enable = <it> }` over the defaults; anything else that is not a
+  -- table falls back to the defaults with a warning.
+  for _, tool in ipairs(vim.tbl_keys(DEFAULTS.tools)) do
+    local sub = cfg.tools[tool]
+    if type(sub) ~= "table" then
+      if type(sub) == "boolean" then
+        cfg.tools[tool] =
+          vim.tbl_extend("force", vim.deepcopy(DEFAULTS.tools[tool]), { enable = sub })
+      else
+        if sub ~= nil then
+          warn(
+            ("tools.%s: expected a table or a boolean, using defaults"):format(tool),
+            "tools",
+            tool
+          )
+        end
+        cfg.tools[tool] = vim.deepcopy(DEFAULTS.tools[tool])
+      end
+    end
+  end
+
   -- `word_keymap` became the keymap catalogue's `word_help` entry: it still
   -- binds (bindings/keymaps.lua maps it onto `keymaps.map.word_help`), but says
   -- so once per setup, naming the replacement. A value that is not a key is

@@ -543,6 +543,8 @@ lspdoctor.probe_timeout (integer, ms)
 tools.<name>.enable   (boolean)   Master switch per extra tool:
                                   eslint_prettier, lsp_signature,
                                   ts_type_lookup, deprecated_help.
+                                  `tools.<name> = false` is short for
+                                  `{ enable = false }`.
 tools.eslint_prettier.filetypes (string[])
                                   Filetypes that tool attaches to.
 tools.lsp_signature.border (string|string[])

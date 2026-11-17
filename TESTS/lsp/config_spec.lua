@@ -138,6 +138,40 @@ describe("lsp.config", function()
     end)
   end)
 
+  describe("tools", function()
+    -- `tools.lsp_signature = false` reached the binder as a boolean and
+    -- `require("lsp").setup()` died indexing it.
+    it("takes a boolean for a tool as its enable switch, over the defaults", function()
+      local config = reload()
+      local cfg = config.setup({ tools = { lsp_signature = false, deprecated_help = true } })
+      assert.is_false(cfg.tools.lsp_signature.enable)
+      assert.are.equal("rounded", cfg.tools.lsp_signature.border)
+      assert.is_true(cfg.tools.deprecated_help.enable)
+      assert.are.equal("hover", cfg.tools.deprecated_help.display)
+      assert.are.same({}, config.warnings())
+    end)
+
+    it("falls back to the defaults for a tool that is neither, with a warning", function()
+      local config = reload()
+      local cfg = config.setup({ tools = { ts_type_lookup = 42 } })
+      assert.is_true(cfg.tools.ts_type_lookup.enable)
+      assert.truthy(table.concat(config.warnings(), " "):find("tools.ts_type_lookup", 1, true))
+    end)
+
+    it("lets the binder run with every tool switched off by a boolean", function()
+      local cfg = reload().setup({
+        tools = {
+          eslint_prettier = false,
+          lsp_signature = false,
+          ts_type_lookup = false,
+          deprecated_help = false,
+        },
+      })
+      local ok, err = pcall(require("lsp.bindings.keymaps").setup, cfg)
+      assert.is_true(ok, tostring(err))
+    end)
+  end)
+
   describe("keymaps", function()
     it("falls back on an unknown preset and says so", function()
       local config = reload()

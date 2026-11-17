@@ -73,7 +73,12 @@ function M.setup(cfg)
   -- explicit override does; `keymaps.map.word_help` wins when both are set.
   -- Only with the tool on, as the option only ever bound with it on.
   local dh = cfg.tools.deprecated_help
-  if dh.enable ~= false and type(dh.word_keymap) == "string" and user.word_help == nil then
+  if
+    type(dh) == "table"
+    and dh.enable ~= false
+    and type(dh.word_keymap) == "string"
+    and user.word_help == nil
+  then
     user.word_help = dh.word_keymap
   end
 

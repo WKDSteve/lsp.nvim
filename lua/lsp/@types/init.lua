@@ -190,10 +190,11 @@ require("lsp.@types.subsystem")
 ---@field help_pages? table<string, string[]> # Per filetype, help files (on the runtimepath as `doc/<name>`, or paths) searched first for the word under the cursor, e.g. `{ lua = { "luvref" } }`.
 
 ---@class LspNvim.ToolsOpts
----@field eslint_prettier? LspNvim.ToolOpts
----@field lsp_signature? LspNvim.SignatureOpts
----@field ts_type_lookup? LspNvim.ToolOpts
----@field deprecated_help? LspNvim.DeprecatedHelpOpts
+--- Each tool also takes a boolean: `false` is `{ enable = false }`.
+---@field eslint_prettier? LspNvim.ToolOpts|boolean
+---@field lsp_signature? LspNvim.SignatureOpts|boolean
+---@field ts_type_lookup? LspNvim.ToolOpts|boolean
+---@field deprecated_help? LspNvim.DeprecatedHelpOpts|boolean
 
 ---@class LspNvim.SignatureOpts: LspNvim.ToolOpts
 ---@field border? string|string[] # Border style of the signature-help float; any `nvim_open_win` border, a hover.nvim style name or an 8-character list.
