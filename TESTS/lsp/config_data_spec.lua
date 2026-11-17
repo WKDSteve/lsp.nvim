@@ -176,10 +176,13 @@ describe("lsp.config.KEYMAPS", function()
       ---@cast modes string[]
       local native = false
       for _, mode in ipairs(modes) do
-        native = native or (NATIVE[mode] ~= nil and NATIVE[mode][spec.lhs] ~= nil)
+        native = native
+          or (spec.lhs ~= nil and NATIVE[mode] ~= nil and NATIVE[mode][spec.lhs] ~= nil)
       end
-      local prefixless_ls = spec.lhs:sub(1, 2) == "ls"
-      if (native or prefixless_ls) and not block:find("`" .. spec.lhs .. "`", 1, true) then
+      local prefixless_ls = spec.lhs ~= nil and spec.lhs:sub(1, 2) == "ls"
+      if
+        (native or prefixless_ls) and not block:find("`" .. tostring(spec.lhs) .. "`", 1, true)
+      then
         unmentioned[#unmentioned + 1] = ("%s (%s)"):format(name, spec.lhs)
       end
     end
@@ -195,7 +198,7 @@ describe("lsp.config.KEYMAPS", function()
     local kept = {}
     for _, name in ipairs(KEYMAPS.presets.minimal) do
       local lhs = KEYMAPS.entries[name].lhs
-      if lhs:sub(1, 2) == "ls" then
+      if lhs ~= nil and lhs:sub(1, 2) == "ls" then
         kept[#kept + 1] = lhs
       end
     end
@@ -205,7 +208,7 @@ describe("lsp.config.KEYMAPS", function()
     ---@type string[]
     local all = {}
     for _, spec in pairs(KEYMAPS.entries) do
-      if spec.lhs:sub(1, 2) == "ls" then
+      if spec.lhs ~= nil and spec.lhs:sub(1, 2) == "ls" then
         all[#all + 1] = spec.lhs
       end
     end

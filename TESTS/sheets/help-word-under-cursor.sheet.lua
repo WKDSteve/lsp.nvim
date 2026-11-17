@@ -1,5 +1,5 @@
 -- Live check of `:Lsp help` (task lsp.nvim/deprecated-help-word-under-cursor) in a real child editor: the
--- configured key on `fs_stat` in Lua code finds `*uv.fs_stat()*` through the help page `luvref` named for the
+-- key configured as `keymaps.map.word_help` on `fs_stat` in Lua code finds `*uv.fs_stat()*` through the help page `luvref` named for the
 -- filetype and shows it in a float, the focus stays in the code; a word without help ends in a message and opens
 -- nothing; with `display = "help"` the same key jumps into luvref.txt at the tag. No server is needed: the lookup
 -- reads help files, not LSP answers.
@@ -21,7 +21,8 @@ return {
         return real(msg, level, opts)
       end
       require("lsp").setup({
-        tools = { deprecated_help = { word_keymap = "<leader>K", help_pages = { lua = { "luvref" } } } },
+        keymaps = { map = { word_help = "<leader>K" } },
+        tools = { deprecated_help = { help_pages = { lua = { "luvref" } } } },
       })
       vim.bo.filetype = "lua"
       vim.api.nvim_buf_set_lines(0, 0, -1, false, { "local st = vim.uv.fs_stat(path)" })

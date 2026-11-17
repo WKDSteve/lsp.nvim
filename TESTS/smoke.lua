@@ -140,13 +140,17 @@ ok(#KEYMAPS.presets.minimal < #KEYMAPS.presets.default, "keymaps: minimal is a s
 -- through the module's internals.
 package.loaded["lsp"] = nil
 local lsp2 = require("lsp")
-lsp2.setup({ keymaps = { map = { qf_next = "<leader>zz", rename = false } } })
+lsp2.setup({
+  keymaps = { map = { qf_next = "<leader>zz", rename = false, word_help = "<leader>zw" } },
+})
 local bound2 = {}
 for _, spec in ipairs(lsp2.status().keymaps) do
   bound2[spec.name] = spec.lhs
 end
 ok(bound2.qf_next == "<leader>zz", "keymaps.map: a string replaces the lhs")
 ok(bound2.rename == nil, "keymaps.map: false drops the mapping")
+ok(bound.word_help == nil, "keymaps: word_help has no default key")
+ok(bound2.word_help == "<leader>zw", "keymaps.map: a string binds an entry with no default key")
 
 package.loaded["lsp"] = nil
 local lsp3 = require("lsp")

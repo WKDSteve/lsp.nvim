@@ -210,6 +210,10 @@ end
 
 --- Apply `word_keymap` and `help_pages`. A wrong value warns and degrades to
 --- the default (no key, no extra pages).
+---
+--- `require("lsp").setup()` passes no `word_keymap`: there the key is the
+--- keymap catalogue's `word_help` entry (`keymaps.map.word_help`). The option
+--- stays here for callers that set up this tool module on its own.
 ---@param opts { word_keymap?: string|false, help_pages?: table<string, string[]> }|nil
 function M.setup(opts)
   opts = opts or {}

@@ -63,8 +63,10 @@ Two things worth knowing about the left-hand sides:
 
 <!-- BEGIN GENERATED KEYMAPS -->
 
-The `default` preset binds all 60 entries below. `minimal` binds the 34
+The `default` preset covers all 61 entries below. `minimal` covers the 34
 marked in the last column; `none` binds nothing.
+1 entry has no default key (lhs `—`): bound only when `keymaps.map.<action>` names one,
+under any preset.
 
 | action | lhs | mode | needs | minimal | description |
 | --- | --- | --- | --- | --- | --- |
@@ -127,6 +129,7 @@ marked in the last column; `none` binds nothing.
 | `trouble_type_definitions` | `<leader>xlt` | n | `trouble` | — | Trouble: type definitions |
 | `trouble_workspace` | `<leader>xw` | n | `trouble` | yes | Trouble: workspace diagnostics |
 | `winbar_toggle` | `<leader>tW` | n | — | — | Toggle the LSP breadcrumb in the winbar (global) |
+| `word_help` | — | n | — | — | Help for the word under the cursor |
 | `workspace_folder_add` | `<leader>lsw` | n | — | yes | Add a workspace folder (multi-root / monorepo) |
 
 which-key group labels:
@@ -135,6 +138,12 @@ which-key group labels:
 | --- | --- |
 | `<leader>x` | Trouble / LSP lists |
 | `<leader>xl` | Trouble LSP views |
+
+Buffer-local keys outside the catalogue (not affected by `keymaps.*`):
+
+| lhs | mode | where | description |
+| --- | --- | --- | --- |
+| `<leader>oh` | n | every `lua_ls` buffer, with `tools.deprecated_help.enable` | Help for the deprecated symbol lua_ls reported last; the diagnostic hint names this key |
 
 <!-- END GENERATED KEYMAPS -->
 
@@ -202,8 +211,9 @@ unless `usrcmds.enable = false`.
 | `:Lsp log open` | — | Open Neovim's LSP log file in a split |
 | `:Lsp log level` | `{trace\|debug\|info\|warn\|error\|off}` | Set the LSP log level |
 
-`:Lsp help` has a key only when `tools.deprecated_help.word_keymap` names one
-(Normal mode, global); there is no default, so it is not in the catalogue above.
+`:Lsp help` has a key only when `keymaps.map.word_help` names one (Normal mode,
+global): the catalogue entry `word_help` above has no default key. The older
+`tools.deprecated_help.word_keymap` still binds it, with a deprecation warning.
 
 None of these takes a range: they act on the current buffer or on global
 state, neither of which a line range narrows.

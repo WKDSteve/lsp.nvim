@@ -12,7 +12,11 @@ describe("lsp.config.KEYMAPS", function()
   describe("entries", function()
     it("every entry has the fields the binder reads", function()
       for name, spec in pairs(KEYMAPS.entries) do
-        assert.are.equal("string", type(spec.lhs), name .. ".lhs")
+        -- nil: no default key, bound only through `keymaps.map` (`word_help`)
+        assert.is_true(
+          spec.lhs == nil or (type(spec.lhs) == "string" and spec.lhs ~= ""),
+          name .. ".lhs"
+        )
         assert.is_true(
           type(spec.mode) == "string" or type(spec.mode) == "table",
           name .. ".mode is a string or a list"
@@ -43,7 +47,7 @@ describe("lsp.config.KEYMAPS", function()
       for name, spec in pairs(KEYMAPS.entries) do
         local modes = type(spec.mode) == "table" and spec.mode or { spec.mode }
         ---@cast modes string[]
-        for _, mode in ipairs(modes) do
+        for _, mode in ipairs(spec.lhs ~= nil and modes or {}) do
           local key = mode .. " " .. spec.lhs
           assert.is_nil(
             claimed[key],
@@ -133,7 +137,7 @@ describe("lsp.config.KEYMAPS", function()
         assert.are.equal("string", type(label), prefix .. " label")
         local used = false
         for _, spec in pairs(KEYMAPS.entries) do
-          if spec.lhs:sub(1, #prefix) == prefix and #spec.lhs > #prefix then
+          if spec.lhs ~= nil and spec.lhs:sub(1, #prefix) == prefix and #spec.lhs > #prefix then
             used = true
             break
           end
@@ -167,9 +171,101 @@ describe("lsp.bindings.keymaps", function()
     return out
   end
 
-  it("binds the whole default preset", function()
+  --- The entries of the default preset that have a default key.
+  ---@return integer
+  local function keyed_default()
+    local n = 0
+    for _, name in ipairs(KEYMAPS.presets.default) do
+      if KEYMAPS.entries[name].lhs ~= nil then
+        n = n + 1
+      end
+    end
+    return n
+  end
+
+  it("binds the whole default preset, except the entries with no default key", function()
     local registered = keymaps.setup(cfg())
-    assert.are.equal(#KEYMAPS.presets.default, #registered)
+    assert.are.equal(keyed_default(), #registered)
+    assert.is_true(keyed_default() < #KEYMAPS.presets.default, "the catalogue has a keyless entry")
+  end)
+
+  describe("an entry with no default key (word_help)", function()
+    local KEY = "<leader>zw"
+
+    before_each(function()
+      pcall(vim.keymap.del, "n", KEY)
+    end)
+
+    it("is in the catalogue but binds nothing until keymaps.map names a key", function()
+      assert.is_nil(KEYMAPS.entries.word_help.lhs)
+      assert.is_true(vim.tbl_contains(KEYMAPS.presets.default, "word_help"))
+      local bound = by_name(keymaps.setup(cfg()))
+      assert.is_nil(bound.word_help)
+      -- recorded all the same: the registry lists what exists, not only what is bound
+      local seen = false
+      for _, e in ipairs(require("lib.nvim.bindings.keymap").registered("LSP")) do
+        if e.name == "word_help" then
+          seen = true
+          assert.is_nil(e.lhs)
+          assert.is_false(e.bound)
+        end
+      end
+      assert.is_true(seen, "word_help is in the registry")
+    end)
+
+    it("is bound and reported once keymaps.map names a key, under any preset", function()
+      for _, preset in ipairs({ "default", "minimal", "none" }) do
+        pcall(vim.keymap.del, "n", KEY)
+        local bound = by_name(keymaps.setup(cfg({ word_help = KEY }, preset)))
+        assert.are.equal(KEY, bound.word_help, preset)
+        local map = vim.fn.maparg(KEY, "n", false, true)
+        assert.are.equal("LSP: Help for the word under the cursor", map.desc, preset)
+      end
+    end)
+
+    it("takes the deprecated tools.deprecated_help.word_keymap, with a warning", function()
+      package.loaded["lsp.config"] = nil
+      local config = require("lsp.config")
+      local c = config.setup({ tools = { deprecated_help = { word_keymap = KEY } } })
+      local warned = false
+      for _, w in ipairs(config.warnings()) do
+        warned = warned
+          or (w:find("word_keymap is deprecated, use keymaps.map.word_help", 1, true) ~= nil)
+      end
+      assert.is_true(warned, "a deprecation warning names the replacement")
+      assert.are.equal(KEY, by_name(keymaps.setup(c)).word_help)
+    end)
+
+    it("prefers keymaps.map.word_help over the deprecated option", function()
+      package.loaded["lsp.config"] = nil
+      local c = require("lsp.config").setup({
+        keymaps = { map = { word_help = "<leader>zv" } },
+        tools = { deprecated_help = { word_keymap = KEY } },
+      })
+      assert.are.equal("<leader>zv", by_name(keymaps.setup(c)).word_help)
+      assert.are.equal("", vim.fn.maparg(KEY, "n"))
+      pcall(vim.keymap.del, "n", "<leader>zv")
+    end)
+
+    it("ignores the deprecated option when the tool is off, and drops a bad value", function()
+      package.loaded["lsp.config"] = nil
+      local c = require("lsp.config").setup({
+        tools = { deprecated_help = { enable = false, word_keymap = KEY } },
+      })
+      assert.is_nil(by_name(keymaps.setup(c)).word_help)
+
+      package.loaded["lsp.config"] = nil
+      local config = require("lsp.config")
+      c = config.setup({ tools = { deprecated_help = { word_keymap = 42 } } })
+      assert.is_false(c.tools.deprecated_help.word_keymap)
+      assert.is_nil(by_name(keymaps.setup(c)).word_help)
+    end)
+
+    it("rebind_buffer_local refuses it while it has no key", function()
+      local bufnr = vim.api.nvim_create_buf(false, true)
+      assert.is_false(keymaps.rebind_buffer_local(cfg(), "word_help", bufnr))
+      vim.api.nvim_buf_delete(bufnr, { force = true })
+    end)
   end)
 
   it("returns entries in a stable order", function()
@@ -219,7 +315,7 @@ describe("lsp.bindings.keymaps", function()
 
   it("an override for an unknown action changes nothing", function()
     local registered = keymaps.setup(cfg({ not_an_action = "<leader>zz" }))
-    assert.are.equal(#KEYMAPS.presets.default, #registered)
+    assert.are.equal(keyed_default(), #registered)
   end)
 
   -- A mapping whose lhs starts with a Visual-mode motion makes that motion

@@ -530,6 +530,19 @@ local entries = {
     rhs = actions.marksman_hints_toggle,
     desc = "Toggle Marksman markdown hints",
   },
+
+  -- ------------------------------------------------------------- help
+  -- No default key (`lhs` is absent): `:Lsp help` covers it, and there is no
+  -- free key every user would want. `keymaps.map.word_help = "<leader>K"`
+  -- binds one. `tools.deprecated_help.word_keymap` is the deprecated spelling
+  -- of that override (`bindings/keymaps.lua` maps it here).
+  word_help = {
+    mode = "n",
+    rhs = function()
+      require("lsp.tools.deprecated_help.word").show()
+    end,
+    desc = "Help for the word under the cursor",
+  },
 }
 
 --- Which entries each preset binds.

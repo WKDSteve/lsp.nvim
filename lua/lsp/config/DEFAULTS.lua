@@ -401,9 +401,10 @@ local DEFAULTS = {
     },
     lsp_signature = { enable = true, border = "rounded" },
     ts_type_lookup = { enable = true },
-    -- `word_keymap`: a key for the help of the word under the cursor (also
-    -- `:Lsp help`); none by default. `help_pages`: extra help files searched
-    -- first, per filetype (`{ lua = { "luvref" } }`).
+    -- `word_keymap`: deprecated spelling of `keymaps.map.word_help` (a key for
+    -- the help of the word under the cursor, also `:Lsp help`); none by
+    -- default. `help_pages`: extra help files searched first, per filetype
+    -- (`{ lua = { "luvref" } }`).
     deprecated_help = { enable = true, display = "hover", word_keymap = false, help_pages = {} },
   },
 

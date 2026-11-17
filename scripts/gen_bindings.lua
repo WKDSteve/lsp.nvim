@@ -17,6 +17,7 @@ local BEGIN = "<!-- BEGIN GENERATED KEYMAPS -->"
 local END = "<!-- END GENERATED KEYMAPS -->"
 
 local KEYMAPS = require("lsp.config.KEYMAPS")
+local DH_DEFAULTS = require("lsp.tools.deprecated_help.defaults")
 
 --- Escape the characters that would break a Markdown table cell.
 ---@param text string
@@ -41,11 +42,26 @@ local out = { BEGIN, "" }
 local names = vim.deepcopy(KEYMAPS.presets.default)
 table.sort(names)
 
-out[#out + 1] = ("The `default` preset binds all %d entries below. `minimal` binds the %d"):format(
+---@type integer
+local keyless = 0
+for _, name in ipairs(names) do
+  if KEYMAPS.entries[name].lhs == nil then
+    keyless = keyless + 1
+  end
+end
+
+out[#out + 1] = ("The `default` preset covers all %d entries below. `minimal` covers the %d"):format(
   #names,
   #KEYMAPS.presets.minimal
 )
 out[#out + 1] = "marked in the last column; `none` binds nothing."
+if keyless > 0 then
+  out[#out + 1] = ("%d %s no default key (lhs `—`): bound only when `keymaps.map.<action>` names one,"):format(
+    keyless,
+    keyless == 1 and "entry has" or "entries have"
+  )
+  out[#out + 1] = "under any preset."
+end
 out[#out + 1] = ""
 out[#out + 1] = "| action | lhs | mode | needs | minimal | description |"
 out[#out + 1] = "| --- | --- | --- | --- | --- | --- |"
@@ -58,9 +74,9 @@ end
 
 for _, name in ipairs(names) do
   local spec = KEYMAPS.entries[name]
-  out[#out + 1] = ("| `%s` | `%s` | %s | %s | %s | %s |"):format(
+  out[#out + 1] = ("| `%s` | %s | %s | %s | %s | %s |"):format(
     name,
-    cell(spec.lhs),
+    spec.lhs and ("`" .. cell(spec.lhs) .. "`") or "—",
     modes(spec.mode),
     spec.requires and ("`" .. spec.requires .. "`") or "—",
     in_minimal[name] and "yes" or "—",
@@ -80,6 +96,20 @@ table.sort(prefixes)
 for _, prefix in ipairs(prefixes) do
   out[#out + 1] = ("| `%s` | %s |"):format(cell(prefix), KEYMAPS.groups[prefix])
 end
+
+-- Keys outside the catalogue, generated too so their default cannot drift
+-- from the code. `<leader>oh` is buffer-local (set in every lua_ls buffer by
+-- tools.deprecated_help) and its key is part of the diagnostic hint text;
+-- the catalogue binds globally, so it stays out on purpose.
+out[#out + 1] = ""
+out[#out + 1] = "Buffer-local keys outside the catalogue (not affected by `keymaps.*`):"
+out[#out + 1] = ""
+out[#out + 1] = "| lhs | mode | where | description |"
+out[#out + 1] = "| --- | --- | --- | --- |"
+out[#out + 1] = ("| `%s` | n | every `lua_ls` buffer, with `tools.deprecated_help.enable` | %s |"):format(
+  cell(DH_DEFAULTS.keymap),
+  "Help for the deprecated symbol lua_ls reported last; the diagnostic hint names this key"
+)
 
 out[#out + 1] = ""
 out[#out + 1] = END
@@ -116,7 +146,8 @@ if check then
   vim.cmd("cq 1")
 end
 
-local wh = assert(io.open(DOC, "w"))
+-- "wb": text mode on Windows would write CRLF into an LF file.
+local wh = assert(io.open(DOC, "wb"))
 wh:write(updated)
 wh:close()
 print("docs/BINDINGS.md regenerated")

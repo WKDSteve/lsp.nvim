@@ -69,7 +69,8 @@ function M.setup(cfg, registered)
   for prefix, label in pairs(KEYMAPS.groups) do
     local used = false
     for _, spec in ipairs(registered) do
-      if spec.lhs:sub(1, #prefix) == prefix and #spec.lhs > #prefix then
+      local lhs = spec.lhs
+      if lhs ~= nil and lhs:sub(1, #prefix) == prefix and #lhs > #prefix then
         used = true
         break
       end

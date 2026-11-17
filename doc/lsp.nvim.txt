@@ -559,9 +559,10 @@ tools.deprecated_help.display ("hover"|"help")
                                   in a float and keeps the focus, "help"
                                   runs `:help`. The same for `:Lsp help`.
 tools.deprecated_help.word_keymap (string|false)
-                                  Normal-mode key for the help of the word
-                                  under the cursor, the same as
-                                  `:Lsp help [word]`. Default false: no key.
+                                  Deprecated: use `keymaps.map.word_help`.
+                                  Still binds that key (warning at setup);
+                                  `keymaps.map.word_help` wins when both
+                                  are set. Default false: no key.
 tools.deprecated_help.help_pages (table<string, string[]>)
                                   Per filetype, help files searched first
                                   for that word: a name under `doc/` on the
@@ -963,8 +964,8 @@ closed unless it says otherwise.
                     word. Searches `tools.deprecated_help.help_pages` of the
                     filetype first, then the `:help` tags. Shown in a float, or
                     with `display = "help"` opened at the match. Says so when
-                    nothing is found. Key: `tools.deprecated_help.word_keymap`
-                    (none by default).
+                    nothing is found. Key: `keymaps.map.word_help` (none by
+                    default).
 
     :Lsp log open                                          *:Lsp-log-open*
                     Open Neovim's LSP log file (|vim.lsp.get_log_path()|) in a

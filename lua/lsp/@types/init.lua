@@ -186,7 +186,7 @@ require("lsp.@types.subsystem")
 
 ---@class LspNvim.DeprecatedHelpOpts: LspNvim.ToolOpts
 ---@field display? "hover"|"help" # Show the help of a deprecated symbol, or of the word under the cursor, in a float ("hover") or with `:help` ("help").
----@field word_keymap? string|false # Normal-mode key for the help of the word under the cursor (same as `:Lsp help`); `false` (default) binds none.
+---@field word_keymap? string|false # Deprecated: use `keymaps.map.word_help`. Normal-mode key for the help of the word under the cursor (same as `:Lsp help`); `false` (default) binds none.
 ---@field help_pages? table<string, string[]> # Per filetype, help files (on the runtimepath as `doc/<name>`, or paths) searched first for the word under the cursor, e.g. `{ lua = { "luvref" } }`.
 
 ---@class LspNvim.ToolsOpts
@@ -307,7 +307,7 @@ require("lsp.@types.subsystem")
 --- One entry of the declarative keymap catalogue. `docs/BINDINGS.md` is meant
 --- to be generated from these rather than maintained by hand, which is why the
 --- description is part of the data instead of a comment.
----@field lhs string # Default left-hand side.
+---@field lhs string|nil # Default left-hand side; absent for an entry that is bound only when `keymaps.map` names a key.
 ---@field mode string|string[] # Mode(s), as `vim.keymap.set` takes them.
 ---@field rhs string|fun(): nil # What the key does.
 ---@field desc string # Human-readable description; also the which-key label.

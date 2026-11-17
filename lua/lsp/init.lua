@@ -310,9 +310,10 @@ local function setup_tools(cfg)
   if tools.deprecated_help.enable then
     step("tools.deprecated_help", function()
       local dh = tools.deprecated_help
+      -- No `word_keymap`: the keymap catalogue binds it (`word_help`, see
+      -- bindings/keymaps.lua), so passing it here would bind the key twice.
       require("lsp.tools.deprecated_help").setup({
         display = dh.display,
-        word_keymap = dh.word_keymap,
         help_pages = dh.help_pages,
       })
     end)
