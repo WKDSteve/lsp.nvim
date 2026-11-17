@@ -564,7 +564,10 @@ tools.deprecated_help.word_keymap (string|false)
                                   Deprecated: use `keymaps.map.word_help`.
                                   Still binds that key (warning at setup);
                                   `keymaps.map.word_help` wins when both
-                                  are set. Default false: no key.
+                                  are set. Bound through the keymap
+                                  catalogue, so `keymaps = false` (or
+                                  `keymaps.enable = false`) drops this key
+                                  too. Default false: no key.
 tools.deprecated_help.help_pages (table<string, string[]>)
                                   Per filetype, help files searched first
                                   for that word: a name under `doc/` on the

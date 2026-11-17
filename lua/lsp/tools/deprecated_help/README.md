@@ -23,11 +23,15 @@ help pages named for the buffer's filetype, then in the `:help` tags. Nothing
 found ends in a message, not an error.
 
 ```lua
+keymaps = { map = { word_help = "<leader>K" } },  -- no key by default
 tools.deprecated_help = {
-  word_keymap = "<leader>K",            -- no key by default
   help_pages = { lua = { "luvref" } },  -- doc/luvref.txt, or a path to a help file
 }
 ```
+
+The key is the keymap catalogue's `word_help` entry, so `keymaps = false` leaves
+it unbound. `tools.deprecated_help.word_keymap` is its deprecated spelling: it
+still binds the same key, with a warning at setup.
 
 A help page is searched for the word as a tag and for a tag that ends in it, so
 `fs_stat` under the cursor finds `*uv.fs_stat()*` in `luvref.txt`. With

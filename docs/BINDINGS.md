@@ -213,7 +213,8 @@ unless `usrcmds.enable = false`.
 
 `:Lsp help` has a key only when `keymaps.map.word_help` names one (Normal mode,
 global): the catalogue entry `word_help` above has no default key. The older
-`tools.deprecated_help.word_keymap` still binds it, with a deprecation warning.
+`tools.deprecated_help.word_keymap` still binds it, with a deprecation warning. Either way the key goes
+through the catalogue, so `keymaps = false` (or `keymaps.enable = false`) leaves it unbound too.
 
 None of these takes a range: they act on the current buffer or on global
 state, neither of which a line range narrows.
