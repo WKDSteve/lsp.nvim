@@ -230,6 +230,12 @@ clean.
   runs each as a case `sheet:<id>` in a child editor. The language server is an in-process stub
   (`TESTS/support/stub_server.lua`), so nothing needs to be installed; the gitsigns sheet uses the real gitsigns
   and git and is a reported `n/a` without them.
+* Feature sheets for what starts a process (`testing perf` of testing.nvim measures them, `docs/PERF.md`):
+  `server-start-stop` starts a real server process, `TESTS/support/stdio_server.lua` run by `nvim -l`;
+  `lint-and-format`, `astro-build-stop` and `flutter-run` run eslint_d/prettier, astro/pkill and flutter as
+  recording stand-ins (`fakes`); `lensline-user-config` runs on your installed config (`config = "user"`, a skip on
+  CI) and fails on a synchronous `git blame` or `git check-ignore`. What has no sheet is marked with `perf` in
+  `TESTS/sheets/features.lua`.
 * `TESTS/lsp/pty_fzf_spec.lua` runs a real Neovim with a real fzf-lua inside tmux (WSL on Windows, testing.nvim's
   `testing.pty`; editor `TESTS/pty/init.lua`) and reads the terminal screen: the fzf windows of `lsa`, `gra`,
   `lsh`/`lsH` and `lsc`/`lsC`. Without tmux, the fzf binary or fzf-lua it prints `n/a  <reason>` (a reported skip).
