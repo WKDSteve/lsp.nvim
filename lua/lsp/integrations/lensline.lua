@@ -35,6 +35,16 @@ function M.configure()
     profiles = {
       {
         name = "minimal",
+        -- Listed explicitly: a profile without `providers` falls back to
+        -- lensline's defaults, which enable `last_author`. That provider runs
+        -- `git blame` over the whole file with a synchronous
+        -- `vim.fn.systemlist` on every attach -- measured 200-440 ms of
+        -- frozen UI per opened file (plus ~65 ms each for `rev-parse` and
+        -- `check-ignore`). Blame stays with gitsigns, which runs it async.
+        providers = {
+          { name = "usages", enabled = true },
+          { name = "last_author", enabled = false },
+        },
         style = {
           placement = "inline",
           prefix = "",
