@@ -717,28 +717,6 @@ local function normalize_all(cfg)
     end
   end
 
-  -- `word_keymap` became the keymap catalogue's `word_help` entry: it still
-  -- binds (bindings/keymaps.lua maps it onto `keymaps.map.word_help`), but says
-  -- so once per setup, naming the replacement. A value that is not a key is
-  -- dropped here rather than reaching the binder.
-  local dh = cfg.tools.deprecated_help
-  if type(dh) == "table" and dh.word_keymap ~= nil and dh.word_keymap ~= false then
-    if type(dh.word_keymap) == "string" and dh.word_keymap ~= "" then
-      warn(
-        "tools.deprecated_help.word_keymap is deprecated, use keymaps.map.word_help",
-        "tools",
-        "deprecated_help"
-      )
-    else
-      warn(
-        "tools.deprecated_help.word_keymap: expected a key or false, binding nothing",
-        "tools",
-        "deprecated_help"
-      )
-      dh.word_keymap = false
-    end
-  end
-
   -- After the loop, because each of these reads a field off a table the loop
   -- is what guarantees is a table. See `normalize_number` for what reaching
   -- their consumers unchecked cost.

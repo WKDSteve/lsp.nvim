@@ -15,9 +15,7 @@ The deprecation help also answers `:Lsp help [word]`: the help entry of the
 word under the cursor in the same float, searching the help pages named per
 filetype (`tools.deprecated_help.help_pages`, e.g. `{ lua = { "luvref" } }`)
 before the `:help` tags. A key for it only with `keymaps.map.word_help` (the
-catalogue entry `word_help` has no default key; the old
-`tools.deprecated_help.word_keymap` still works but is deprecated; `keymaps = false` switches
-either spelling off).
+catalogue entry `word_help` has no default key; `keymaps = false` switches it off).
 
 ## One picker, not two
 

@@ -67,21 +67,6 @@ function M.setup(cfg)
   -- entry".
   local user = vim.deepcopy(cfg.keymaps.map or {})
 
-  -- `tools.deprecated_help.word_keymap` is the deprecated spelling of
-  -- `keymaps.map.word_help` (config/init.lua warns about it). Read before the
-  -- preset loop below, so the alias binds under every preset the way an
-  -- explicit override does; `keymaps.map.word_help` wins when both are set.
-  -- Only with the tool on, as the option only ever bound with it on.
-  local dh = cfg.tools.deprecated_help
-  if
-    type(dh) == "table"
-    and dh.enable ~= false
-    and type(dh.word_keymap) == "string"
-    and user.word_help == nil
-  then
-    user.word_help = dh.word_keymap
-  end
-
   for _, name in ipairs(names) do
     if not in_preset[name] and user[name] == nil then
       user[name] = false

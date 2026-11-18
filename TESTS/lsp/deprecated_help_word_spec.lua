@@ -182,7 +182,8 @@ describe("lsp.tools.deprecated_help.word", function()
   end)
 
   it("binds no key by default, the configured one when asked, and warns on a bad value", function()
-    assert.is_false(require("lsp.config.DEFAULTS").tools.deprecated_help.word_keymap)
+    -- The config option is gone (keymaps.map.word_help); the tool module set up on its own keeps it.
+    assert.is_nil(require("lsp.config.DEFAULTS").tools.deprecated_help.word_keymap)
     require("lsp.tools.deprecated_help").setup({})
     assert.are.equal("", vim.fn.maparg("<leader>zq", "n"))
 

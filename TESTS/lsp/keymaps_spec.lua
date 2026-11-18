@@ -223,43 +223,22 @@ describe("lsp.bindings.keymaps", function()
       end
     end)
 
-    it("takes the deprecated tools.deprecated_help.word_keymap, with a warning", function()
-      package.loaded["lsp.config"] = nil
-      local config = require("lsp.config")
-      local c = config.setup({ tools = { deprecated_help = { word_keymap = KEY } } })
-      local warned = false
-      for _, w in ipairs(config.warnings()) do
-        warned = warned
-          or (w:find("word_keymap is deprecated, use keymaps.map.word_help", 1, true) ~= nil)
+    it(
+      "no longer takes tools.deprecated_help.word_keymap: an unknown option that binds nothing",
+      function()
+        package.loaded["lsp.config"] = nil
+        local config = require("lsp.config")
+        local c = config.setup({ tools = { deprecated_help = { word_keymap = KEY } } })
+        local unknown = false
+        for _, w in ipairs(config.warnings()) do
+          unknown = unknown
+            or (w:find("tools.deprecated_help.word_keymap: unknown option", 1, true) ~= nil)
+        end
+        assert.is_true(unknown, "setup() names the removed option as unknown")
+        assert.is_nil(by_name(keymaps.setup(c)).word_help)
+        assert.are.equal("", vim.fn.maparg(KEY, "n"))
       end
-      assert.is_true(warned, "a deprecation warning names the replacement")
-      assert.are.equal(KEY, by_name(keymaps.setup(c)).word_help)
-    end)
-
-    it("prefers keymaps.map.word_help over the deprecated option", function()
-      package.loaded["lsp.config"] = nil
-      local c = require("lsp.config").setup({
-        keymaps = { map = { word_help = "<leader>zv" } },
-        tools = { deprecated_help = { word_keymap = KEY } },
-      })
-      assert.are.equal("<leader>zv", by_name(keymaps.setup(c)).word_help)
-      assert.are.equal("", vim.fn.maparg(KEY, "n"))
-      pcall(vim.keymap.del, "n", "<leader>zv")
-    end)
-
-    it("ignores the deprecated option when the tool is off, and drops a bad value", function()
-      package.loaded["lsp.config"] = nil
-      local c = require("lsp.config").setup({
-        tools = { deprecated_help = { enable = false, word_keymap = KEY } },
-      })
-      assert.is_nil(by_name(keymaps.setup(c)).word_help)
-
-      package.loaded["lsp.config"] = nil
-      local config = require("lsp.config")
-      c = config.setup({ tools = { deprecated_help = { word_keymap = 42 } } })
-      assert.is_false(c.tools.deprecated_help.word_keymap)
-      assert.is_nil(by_name(keymaps.setup(c)).word_help)
-    end)
+    )
 
     it("rebind_buffer_local refuses it while it has no key", function()
       local bufnr = vim.api.nvim_create_buf(false, true)

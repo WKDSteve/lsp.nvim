@@ -193,7 +193,7 @@ Defaults (excerpt -- the full table is `lua/lsp/config/DEFAULTS.lua`): >lua
         lsp_signature = { enable = true, border = "rounded" },
         ts_type_lookup = { enable = true },
         deprecated_help = { enable = true, display = "hover",
-                            word_keymap = false, help_pages = {} },
+                            help_pages = {} },
       },
       languages = { enable = true, env_links = true },
       completion = {
@@ -560,14 +560,6 @@ tools.deprecated_help.display ("hover"|"help")
                                   shown: "hover" (default) opens its entry
                                   in a float and keeps the focus, "help"
                                   runs `:help`. The same for `:Lsp help`.
-tools.deprecated_help.word_keymap (string|false)
-                                  Deprecated: use `keymaps.map.word_help`.
-                                  Still binds that key (warning at setup);
-                                  `keymaps.map.word_help` wins when both
-                                  are set. Bound through the keymap
-                                  catalogue, so `keymaps = false` (or
-                                  `keymaps.enable = false`) drops this key
-                                  too. Default false: no key.
 tools.deprecated_help.help_pages (table<string, string[]>)
                                   Per filetype, help files searched first
                                   for that word: a name under `doc/` on the
