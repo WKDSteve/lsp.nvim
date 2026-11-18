@@ -202,6 +202,55 @@ describe("lsp.tools.eslint_prettier", function()
     )
   end)
 
+  -- On Windows npm installs eslint_d and prettier as `.cmd` files: `executable`
+  -- finds them through PATHEXT, but libuv's spawn of the bare name does not, so
+  -- `:EslintFix` and `:PrettierFormat` answered "failed to spawn" every time
+  -- (found by the feature sheet TESTS/sheets/lint-and-format.sheet.lua). Next
+  -- to the `.cmd` npm puts an extensionless sh shim that `exepath()` prefers and
+  -- Windows cannot start either; the stand-ins here get one too. The resolved
+  -- binary is the absolute path of the program a spawn can start: the `.cmd` on
+  -- Windows, the script itself elsewhere.
+  it("resolves eslint_d and prettier on PATH to a path a spawn can start", function()
+    local executable = require("lib.nvim.cross.executable")
+    local windows = require("lib.nvim.cross.platform.is_windows")()
+    local names = { "eslint_d", "prettier" }
+    local fake = require("testing.fake_programs").new(names)
+    if windows then
+      for _, name in ipairs(names) do
+        vim.fn.writefile({ "#!/bin/sh", "exit 0" }, fake.dir .. "/" .. name)
+      end
+    end
+    local mods = { "lsp.tools.eslint_prettier.eslint", "lsp.tools.eslint_prettier.prettier" }
+    local function forget()
+      for _, name in ipairs(names) do
+        executable.clear(name)
+        executable.clear(name .. ".cmd")
+      end
+      for _, mod in ipairs(mods) do
+        package.loaded[mod] = nil
+      end
+    end
+    local got = {}
+    fake:with_path(function()
+      forget()
+      got.eslint_d = require("lsp.tools.eslint_prettier.eslint").get_eslint_bin()
+      got.prettier = require("lsp.tools.eslint_prettier.prettier").get_prettier_bin()
+    end)
+    forget()
+    local function canon(path)
+      path = vim.fs.normalize(path or "")
+      return windows and path:lower() or path
+    end
+    for _, name in ipairs(names) do
+      assert.are.equal(
+        canon(fake.dir .. "/" .. name .. (windows and ".cmd" or "")),
+        canon(got[name]),
+        name
+      )
+    end
+    fake:close()
+  end)
+
   -- `not not not not x` is `x`. The command reported a toggle and changed
   -- nothing: `_enabled` measured true before the call and true after two of
   -- them, while `doc/autorun.md` promises it flips the flag and then says
