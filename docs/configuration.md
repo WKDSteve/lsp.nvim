@@ -604,6 +604,12 @@ between starts its clock from zero the next time it goes idle. The stop is
 declared to `auto_restart` first, so it is not mistaken for a crash, and it is
 written to the LSP log (`:Lsp log open`) rather than announced.
 
+**Its diagnostics go with it.** A stopped server's diagnostics are cleared like
+those of any stopped client — the workspace-wide ones of that repository
+included, so a Trouble or quickfix list of the whole workspace loses them until
+the server is back. Raise the minutes, or set the server to `false`, where that
+list is what you work from.
+
 **Coming back is automatic.** When a buffer the server was stopped from is
 shown again, the server is started for it with the normal root resolution —
 for LuaLS that is the buffer's own repository and its `.luarc.json`. A file
