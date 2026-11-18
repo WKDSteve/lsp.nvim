@@ -395,3 +395,48 @@ describe("lsp.integrations.mason.ensure_install defaults", function()
     assert.are.same({}, unresolvable)
   end)
 end)
+
+describe("lsp.integrations.lensline", function()
+  local saved, received
+
+  before_each(function()
+    saved = package.loaded["lensline"]
+    received = nil
+    package.loaded["lensline"] = {
+      setup = function(opts)
+        received = opts
+      end,
+    }
+    package.loaded["lsp.integrations.lensline"] = nil
+  end)
+
+  after_each(function()
+    package.loaded["lensline"] = saved
+    package.loaded["lsp.integrations.lensline"] = nil
+  end)
+
+  --- Without an explicit `providers` list lensline used its defaults, which
+  --- enable `last_author`: a synchronous `git blame` of the whole file on every
+  --- attach (196-441 ms frozen UI per opened file, measured 2026-11-18).
+  it("lists its providers and keeps last_author off", function()
+    assert.is_true(require("lsp.integrations.lensline").configure())
+    local profile = received and received.profiles and received.profiles[1]
+    assert.is_table(profile)
+    assert.is_table(profile.providers, "no providers list: lensline falls back to its defaults")
+    local by_name = {}
+    for _, p in ipairs(profile.providers) do
+      by_name[p.name] = p
+    end
+    assert.is_table(by_name.last_author)
+    assert.is_false(by_name.last_author.enabled)
+    assert.is_true(by_name.usages.enabled)
+  end)
+
+  --- `exclude_gitignored` ran a synchronous `git check-ignore` the first time
+  --- each file was opened (55-70 ms frozen UI per file, measured 2026-11-18).
+  it("does not ask git whether a file is ignored", function()
+    assert.is_true(require("lsp.integrations.lensline").configure())
+    assert.is_table(received.limits)
+    assert.is_false(received.limits.exclude_gitignored)
+  end)
+end)

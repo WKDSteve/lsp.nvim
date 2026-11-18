@@ -32,6 +32,12 @@ function M.configure()
   end
 
   lensline.setup({
+    -- `exclude_gitignored` asks `git check-ignore` through a synchronous
+    -- `vim.fn.system` the first time each file is opened (55-70 ms frozen
+    -- UI per file, measured). The pattern excludes (node_modules, dist,
+    -- build, ...) stay; a lens in some other ignored file costs nothing
+    -- comparable.
+    limits = { exclude_gitignored = false },
     profiles = {
       {
         name = "minimal",
