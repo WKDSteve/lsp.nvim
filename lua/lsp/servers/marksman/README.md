@@ -61,3 +61,28 @@ Definition, hover, path completion and those diagnostics come from a separate in
 (`lsp.core.env_links_server`), because a handler in this server's config would
 only reach requests that use client handlers, and `vim.lsp.buf.definition` does
 not. See `docs/configuration.md` (`languages.env_links`).
+
+## Memory: what marksman indexes
+
+marksman indexes every Markdown file under its root, and its memory grows with
+that number. Measured 2026-11-18 on the tasks-vault (marksman 1.0.0, 60 s after
+opening one file, no request sent): 10.4k files 429 MB / 16 s CPU, the same
+vault at 5.3k files 260 MB / 9 s. A README-sized repository stays near 90 MB,
+which is the process itself.
+
+- **No exclude option.** `.marksman.toml` has none. marksman skips what
+  `.gitignore`, `.ignore` and `.hgignore` (in any folder) exclude, and `.git`
+  itself. It does **not** read `.git/info/exclude` or the global git excludes:
+  a directory ignored only there is indexed. The case that doubled the vault was
+  an agent worktree under `.claude/worktrees/` -- a full second copy, excluded
+  in `.git/info/exclude` only. Put such directories in the repository's
+  `.gitignore`.
+- **Git worktrees get no index at all.** In a linked worktree `.git` is a file,
+  and marksman logs `Workspace folder is bogus` and runs per file: links to
+  other files resolve to nothing there. That is marksman's decision, not this
+  plugin's root resolution.
+- **Out of sight, out of memory.** `idle_stop_minutes.marksman` (10 by default)
+  stops an instance whose Markdown buffers are all hidden; showing one starts it
+  again. That is also what keeps one instance per root affordable: sharing one
+  process across roots would save the ~90 MB base per root but index all of
+  them in one process, and an idle root is stopped anyway.
