@@ -9,3 +9,7 @@ docs/map/
 
 # Local dependency checkouts for headless script/CI runs.
 .deps/
+
+# Agent worktrees. marksman reads .gitignore but not .git/info/exclude, and
+# would otherwise index every worktree's copy of the docs.
+.claude/worktrees/
