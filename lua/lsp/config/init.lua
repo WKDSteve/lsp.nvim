@@ -668,6 +668,11 @@ local function normalize_all(cfg)
   normalize_switch(cfg, "menu")
   normalize_integrations(cfg)
   normalize_servers(cfg)
+  -- `false` is the documented "off for every server", not a bad value: it is
+  -- turned into the empty map before the table check would warn about it.
+  if cfg.idle_stop_minutes == false then
+    cfg.idle_stop_minutes = {}
+  end
   for _, key in ipairs({
     "rename",
     "diagnostics",
@@ -680,6 +685,7 @@ local function normalize_all(cfg)
     "code_actions",
     "finder",
     "auto_restart",
+    "idle_stop_minutes",
     "attach",
     "mason",
     "lspdoctor",
@@ -806,6 +812,25 @@ local function normalize_all(cfg)
       "max_delay_ms"
     )
     cfg.auto_restart.max_delay_ms = cfg.auto_restart.initial_delay_ms
+  end
+
+  -- Each entry ends up as a timer deadline. A zero, a negative or a string
+  -- would stop a server on the next check or never; neither is what the
+  -- person wrote, so the entry falls back to its default -- `false` (never
+  -- stopped) for a server the defaults do not name -- with a warning.
+  for name, minutes in pairs(cfg.idle_stop_minutes) do
+    if minutes ~= false and (type(minutes) ~= "number" or minutes <= 0) then
+      local fallback = DEFAULTS.idle_stop_minutes[name] or false
+      warn(
+        ("idle_stop_minutes.%s: expected a positive number of minutes or false, using %s"):format(
+          tostring(name),
+          tostring(fallback)
+        ),
+        "idle_stop_minutes",
+        tostring(name)
+      )
+      cfg.idle_stop_minutes[name] = fallback
+    end
   end
 
   normalize_filetype_map(cfg, "lightbulb")

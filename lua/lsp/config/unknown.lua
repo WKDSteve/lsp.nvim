@@ -56,6 +56,8 @@ local FREE_FORM = {
   ["implement.kinds"] = true,
   ["peek.keys"] = true,
   ["mason.overrides"] = true,
+  -- Keyed by server name: any configured server may be named.
+  ["idle_stop_minutes"] = true,
   -- Only `ui` and `debounce_ms` are ours; everything else is a
   -- `vim.diagnostic.config()` option that `core.diagnostics.apply` merges last.
   ["diagnostics"] = true,

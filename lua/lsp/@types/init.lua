@@ -257,6 +257,7 @@ require("lsp.@types.subsystem")
 ---@field code_actions LspNvim.CodeActionsOpts
 ---@field finder LspNvim.FinderOpts
 ---@field auto_restart LspNvim.AutoRestartOpts
+---@field idle_stop_minutes table<string, number|false> # Minutes without a visible buffer before a server is stopped, per server name.
 ---@field attach LspNvim.AttachOpts
 ---@field mason LspNvim.MasonOpts
 ---@field lspdoctor table # Options forwarded to `lsp.lspdoctor.setup()`.
@@ -286,6 +287,7 @@ require("lsp.@types.subsystem")
 ---@field code_actions? LspNvim.CodeActionsOpts
 ---@field finder? LspNvim.FinderOpts
 ---@field auto_restart? LspNvim.AutoRestartOpts
+---@field idle_stop_minutes? table<string, number|false>|false # Per server: minutes without a visible buffer before it is stopped; `false` = never. `false` for the whole map = off.
 ---@field attach? LspNvim.AttachOpts
 ---@field mason? LspNvim.MasonOpts
 ---@field lspdoctor? table # Options forwarded to `lsp.lspdoctor.setup()`.

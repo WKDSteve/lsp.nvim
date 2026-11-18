@@ -181,6 +181,7 @@ Defaults (excerpt -- the full table is `lua/lsp/config/DEFAULTS.lua`): >lua
         initial_delay_ms = 1000, max_delay_ms = 30000,
         reset_after_ms = 60000,
       },
+      idle_stop_minutes = { lua_ls = 10, marksman = 10 },
       attach = {
         use_workspace_diagnostics = true,
         workspace_diagnostics_projects = {},
@@ -490,6 +491,15 @@ auto_restart.reset_after_ms (integer)
                                   would let a server that crashes two seconds
                                   after every attach restart forever, since
                                   each attach would forgive the previous crash.
+idle_stop_minutes     (table|false) Server name -> minutes (or `false`). A
+                                  client with no buffer in any window on any
+                                  tab page and no request in flight is stopped
+                                  after that many minutes, and started again
+                                  when one of its buffers is shown. LuaLS and
+                                  marksman are named by default (10 each);
+                                  a server not named is never stopped.
+                                  `false` for the whole option turns it off.
+                                  Not allowed in `.nvim-lsp.json`.
 attach.use_workspace_diagnostics (boolean)
                                   Populate workspace-wide diagnostics on
                                   attach. On by default: the module measures

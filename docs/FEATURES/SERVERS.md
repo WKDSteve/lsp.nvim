@@ -69,6 +69,20 @@ reports, for both the automatic restarts and the asked ones in
   `auto_restart.reset_after_ms`
 - **Commands:** `:Lsp autorestart [toggle|on|off|status]`
 
+## Idle stop
+
+A server whose buffers are all out of sight — no buffer in any window on any
+tab page, no request in flight — is stopped after its idle time, and started
+again when one of those buffers is shown. LuaLS (close to 1 GB per repository)
+and marksman (grows with the Markdown files under its root) are named by
+default, 10 minutes each; any server can be added. The stop goes through the
+supervisor's `expect_stop` first, so auto-restart does not answer it. One timer
+checks all clients once a minute; the clock is a function field the spec suite
+replaces, so the deadlines are tested without waiting.
+
+- **Module:** `core/idle_stop.lua`
+- **Config:** `idle_stop_minutes` (`server name -> minutes | false`, or `false`)
+
 ## Per-language and per-server setup
 
 Filetype-specific quality-of-life applied before the servers are registered

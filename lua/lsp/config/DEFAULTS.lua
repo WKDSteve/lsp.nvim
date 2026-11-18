@@ -324,6 +324,23 @@ local DEFAULTS = {
     reset_after_ms = 60000,
   },
 
+  -- Stop a server whose buffers are all out of sight, and start it again when
+  -- one of them is shown. Minutes per server name; a server not named here, or
+  -- set to `false`, is never stopped. `idle_stop_minutes = false` turns the
+  -- whole thing off.
+  --
+  -- Idle means: no attached buffer in any window on any tab page, and no
+  -- request in flight. Only the two servers whose memory grows with the tree
+  -- are named by default -- LuaLS holds close to a gigabyte per repository,
+  -- marksman grows with the number of Markdown files under its root -- because
+  -- a stop costs a re-index when you come back, and for a small server that
+  -- costs more than the memory it frees. See `lsp.core.idle_stop`.
+  ---@type table<string, number|false>|false
+  idle_stop_minutes = {
+    lua_ls = 10,
+    marksman = 10,
+  },
+
   -- Handed to `core/attach.lua`'s builder.
   attach = {
     -- Startup default only -- `lsp.core.workspace_diagnostics` overrides it at

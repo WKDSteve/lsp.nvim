@@ -359,6 +359,11 @@ local function bootstrap(cfg)
   step("auto-restart supervisor", function()
     require("lsp.core.supervisor").setup(cfg.auto_restart)
   end)
+  -- After the supervisor: every idle stop is declared to it first, so it does
+  -- not read the exit as a crash and relaunch the server at once.
+  step("idle stop", function()
+    require("lsp.core.idle_stop").setup(cfg.idle_stop_minutes)
+  end)
   -- Also early, for the same reason: it patches `vim.lsp._changetracking`
   -- before the first `on_lines` callback can hit the desync it guards
   -- against.

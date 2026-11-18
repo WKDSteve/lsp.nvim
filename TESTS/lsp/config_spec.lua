@@ -272,6 +272,7 @@ describe("lsp.config", function()
       "code_actions",
       "finder",
       "auto_restart",
+      "idle_stop_minutes",
       "attach",
       "mason",
       "lspdoctor",
@@ -310,9 +311,10 @@ describe("lsp.config", function()
     end)
 
     -- `keymaps = false` is a valid spelling (see the keymaps cases above), not a
-    -- value to degrade.
+    -- value to degrade. So is `idle_stop_minutes = false` ("never stop any
+    -- server"), covered in its own block below.
     for _, key in ipairs(KEYS) do
-      if key ~= "keymaps" then
+      if key ~= "keymaps" and key ~= "idle_stop_minutes" then
         it(("degrades %s = false instead of raising"):format(key), function()
           local config = reload()
           local ok, cfg = pcall(config.setup, { [key] = false })
@@ -322,6 +324,41 @@ describe("lsp.config", function()
         end)
       end
     end
+  end)
+
+  describe("idle_stop_minutes", function()
+    it("names LuaLS and marksman by default", function()
+      local cfg = reload().setup({})
+      assert.are.same({ lua_ls = 10, marksman = 10 }, cfg.idle_stop_minutes)
+    end)
+
+    it("reads false as off for every server, without a warning", function()
+      local config = reload()
+      local cfg = config.setup({ idle_stop_minutes = false })
+      assert.are.same({}, cfg.idle_stop_minutes)
+      assert.are.same({}, config.warnings())
+    end)
+
+    it("merges a per-server entry over the defaults", function()
+      local cfg = reload().setup({ idle_stop_minutes = { lua_ls = false, ts_ls = 5 } })
+      assert.are.same({ lua_ls = false, marksman = 10, ts_ls = 5 }, cfg.idle_stop_minutes)
+    end)
+
+    it("puts a non-positive or non-numeric entry back to its default, with a warning", function()
+      local config = reload()
+      local cfg = config.setup({ idle_stop_minutes = { lua_ls = 0, marksman = "ten", gopls = -1 } })
+      assert.are.equal(10, cfg.idle_stop_minutes.lua_ls)
+      assert.are.equal(10, cfg.idle_stop_minutes.marksman)
+      -- No default to go back to: never stopped.
+      assert.is_false(cfg.idle_stop_minutes.gopls)
+      assert.are.equal(3, #config.warnings())
+    end)
+
+    it("does not report a server name as an unknown option", function()
+      local config = reload()
+      config.setup({ idle_stop_minutes = { gopls = 15 } })
+      assert.are.same({}, config.warnings())
+    end)
   end)
 
   describe("diagnostics.ui", function()

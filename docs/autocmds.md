@@ -2,7 +2,7 @@
 
 `lua/lsp/bindings/autocmds.lua`'s own doc comment says "One group, `lsp_nvim`"
 and names only the formatter as an exception. That understates it: this
-plugin registers **43 autocommands across 29 augroups**, spread over
+plugin registers **45 autocommands across 30 augroups**, spread over
 `bindings/`, `core/`, `formatter/`, `languages/`, `tools/`, `servers/` and
 `integrations/`. [BINDINGS.md](BINDINGS.md#autocommands) covers only the groups
 that back the keymap/rename layer and the indicators; this page is the
@@ -25,12 +25,12 @@ the first request and the first peek; `lsp_nvim_gitsigns_actions` (1) only with
 `code_actions.gitsigns`; the per-window signature popup and `LangJava`'s
 nested `BufWritePre` only when one opens -- and two are not traced to a file.
 
-29 groups = 19 named string literals + `lsp_nvim`, `lsp_nvim_inlay_hints`,
-`lsp_nvim_lightbulb`, `lsp_nvim_supervisor`, `lsp_nvim_winbar`,
+30 groups = 19 named string literals + `lsp_nvim`, `lsp_nvim_inlay_hints`,
+`lsp_nvim_lightbulb`, `lsp_nvim_supervisor`, `lsp_nvim_idle_stop`, `lsp_nvim_winbar`,
 `lsp_nvim_symbols`, `lsp_nvim_implement`, `lsp_nvim_peek`,
 `lsp_nvim_gitsigns_actions` (built from `M.GROUP` constants) +
 `LspSignaturePopup_<winid>`, whose name is built at runtime -- a grep for the
-literal string finds the first 19 and none of the last 10. That one exists only
+literal string finds the first 19 and none of the last 11. That one exists only
 while its popup is open: the hook deletes itself -- its record in `lib.nvim`'s
 autocmd registry included -- and the group when the popup closes, so a session
 that shows a thousand popups does not carry a thousand records.
@@ -59,6 +59,8 @@ that shows a thousand popups does not carry a thousand records.
 | `lsp_nvim_gitsigns_actions` | `User` | `GitSignsUpdate` | `code_actions.gitsigns` | Starts the in-process server on a buffer gitsigns is attached to |
 | `lsp_nvim_supervisor` | `LspAttach` | — | — | Records server name, buffer and start time per client id |
 | `lsp_nvim_supervisor` | `VimLeavePre` | — | — | Sets the flag that keeps client exits during `:qa` from counting as crashes |
+| `lsp_nvim_idle_stop` | `BufWinEnter` | — | a server is named in `idle_stop_minutes` | Starts the servers that were stopped while this buffer was out of sight |
+| `lsp_nvim_idle_stop` | `BufWipeout` | — | a server is named in `idle_stop_minutes` | Forgets which servers a wiped buffer had stopped |
 
 `lsp_nvim_inlay_hints`, `lsp_nvim_lightbulb`, `lsp_nvim_winbar` and
 `lsp_nvim_implement` are their own groups rather than folded into `lsp_nvim`
@@ -239,6 +241,8 @@ of blindness that let two groupless autocommands (above) stack unnoticed.
 
 ## Changelog
 
+- 2026-11-18: `lsp_nvim_idle_stop` added (two call sites, two events). 45
+  across 30.
 - 2026-09-21: lspsaga removed. `LspNvimSagaWinbarDepth` (4 call sites) is gone;
   `lsp_nvim_winbar` (7), `lsp_nvim_symbols` (2), `lsp_nvim_implement` (2),
   `lsp_nvim_peek` (1) and, opt-in, `lsp_nvim_gitsigns_actions` (1) are new.

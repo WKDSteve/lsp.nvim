@@ -51,10 +51,10 @@ local M = {}
 --- * `languages`    -- the per-filetype setup this tree wants.
 ---
 --- The omissions are the point, so they are named rather than left implicit.
---- All seventeen of them. `auto_restart` was once refused by the allowlist and
+--- All eighteen of them. `auto_restart` was once refused by the allowlist and
 --- mentioned nowhere, so the one option whose omission a reader had to infer
 --- was the one about restarting processes. Counted rather than eyeballed --
---- nine allowed plus the seventeen below is every top-level key in `DEFAULTS`.
+--- nine allowed plus the eighteen below is every top-level key in `DEFAULTS`.
 ---
 --- * `preset`                -- a property of the machine, not the repository.
 --- * `keymaps`, `usrcmds`,
@@ -70,6 +70,10 @@ local M = {}
 ---                              to the tree being edited -- and it is the one
 ---                              omission here that a repository could turn into
 ---                              a restart loop.
+--- * `idle_stop_minutes`     -- when this editor stops a server to free memory.
+---                              The same kind of machine policy, and a checkout
+---                              that set it to one minute would stop and
+---                              re-index its servers all day.
 --- * `completion`, `rename`  -- host data and a personal habit; neither is a
 ---                              property of the code being edited.
 --- * `winbar`, `peek`,

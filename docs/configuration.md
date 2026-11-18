@@ -166,13 +166,15 @@ one.
 `inlay_hints`, `lightbulb`, `attach`, `workspace`, `tools`, `languages` are
 accepted; everything else is dropped with a warning. The line is not "what
 could break" but *whose question is this*. Those nine describe the codebase, so
-the codebase may answer them. The other seventeen top-level keys do not, and the
+the codebase may answer them. The other eighteen top-level keys do not, and the
 omissions are named rather than left to be inferred. `keymaps`, `usrcmds`,
 `which_key` and `menu` describe you — opening a repository must not move a key
 or drop a command. `mason` installs software. `preset` is a property of the
 machine. `auto_restart` is a supervision policy: how often this editor
 relaunches a crashed process belongs to the machine running the servers, and it
 is the one omission a repository could otherwise turn into a restart loop.
+`idle_stop_minutes` is the same kind of machine policy: when this editor stops
+a server to free memory.
 `lspdoctor` is report formatting and `rename` a personal habit, neither of them
 a property of the code being edited. So are `winbar`, `peek`, `implement`,
 `code_actions` and `finder`: how *your* editor looks and which picker it opens —
@@ -567,6 +569,48 @@ because each attach would forgive the previous crash.
 `:Lsp autorestart [toggle|on|off|status]` moves the switch at runtime. There is
 no keymap: unlike the hint and indicator toggles this is set once and left, and
 a key for it would be a key you never press.
+
+## idle_stop_minutes
+
+Stopping a server nobody is looking at, and starting it again when you look:
+
+```lua
+idle_stop_minutes = {
+  lua_ls = 10,
+  marksman = 10,
+},
+```
+
+Minutes per server name. A server not named here, or named with `false`, is
+never stopped; `idle_stop_minutes = false` turns it off for every server. Any
+configured server can be named (`ts_ls = 15`), not only the two above.
+
+**Why.** A server is started per project root and otherwise lives as long as
+the editor. LuaLS holds close to a gigabyte per repository (measured: 0.9–1 GB,
+32 s of CPU to index lib.nvim), and marksman grows with the Markdown files
+under its root. Open three repositories, keep working in one, and the other
+two keep their memory all day. Only these two are named by default: a stop
+costs a re-index when you come back, and for a small server that costs more
+than the memory it frees.
+
+**Idle means both of these**, checked once a minute per client:
+
+- none of its buffers is shown in a window, on any tab page — a buffer that is
+  only loaded (hidden, in the buffer list) does not count;
+- no request is in flight, so a stop never cuts off an answer.
+
+A client that stays idle for its minutes is stopped; one that becomes busy in
+between starts its clock from zero the next time it goes idle. The stop is
+declared to `auto_restart` first, so it is not mistaken for a crash, and it is
+written to the LSP log (`:Lsp log open`) rather than announced.
+
+**Coming back is automatic.** When a buffer the server was stopped from is
+shown again, the server is started for it with the normal root resolution —
+for LuaLS that is the buffer's own repository and its `.luarc.json`. A file
+opened fresh does not need this: its `FileType` starts the server as always.
+
+Not allowed in `.nvim-lsp.json`: a checkout that set one minute would stop and
+re-index its servers all day.
 
 ## attach.workspace_diagnostics_projects
 
