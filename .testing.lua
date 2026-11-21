@@ -215,11 +215,18 @@ return {
       packages = {
         {
           -- TESTS/lsp/probe_live_spec.lua fails under CI without one of its servers (lua_ls, ts_ls, gopls). apt and brew
-          -- install gopls (Go is on the ubuntu and macOS images); choco has no gopls, so the Windows leg installs
-          -- lua-language-server. lua_ls from brew ran into the 30 s case timeout on the hosted macOS leg (2026-11-21).
+          -- install gopls; choco has no gopls, so the Windows leg installs lua-language-server. lua_ls from brew ran
+          -- into the 30 s case timeout on the hosted macOS leg (2026-11-21).
           name = "gopls",
           choco = "lua-language-server",
           why = "a real language server for the live probe of TESTS/lsp/probe_live_spec.lua (gopls; lua_ls on Windows)",
+        },
+        {
+          -- the spec skips gopls without `go` on PATH, and the hosted macOS image has none (2026-11-21)
+          name = "go",
+          apt = "golang-go",
+          choco = "golang",
+          why = "gopls of the live probe loads its module with the Go toolchain",
         },
       },
       publish = {

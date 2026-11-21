@@ -136,6 +136,16 @@ jobs:
       - name: Install gopls (Windows)
         if: matrix.hosted && runner.os == 'Windows'
         run: choco install lua-language-server -y --no-progress
+      # go: gopls of the live probe loads its module with the Go toolchain
+      - name: Install go (Linux)
+        if: matrix.hosted && runner.os == 'Linux'
+        run: sudo apt-get install -y golang-go
+      - name: Install go (macOS)
+        if: matrix.hosted && runner.os == 'macOS'
+        run: brew install go
+      - name: Install go (Windows)
+        if: matrix.hosted && runner.os == 'Windows'
+        run: choco install golang -y --no-progress
       # The result cache (docs/CI-CACHE.md of testing.nvim). The key is only the transport: every entry carries its
       # own full spec key and is checked against it when read, so a wrong restore can lower the hit rate and never turn
       # a result green. A pull request only restores; only a push to main saves.
