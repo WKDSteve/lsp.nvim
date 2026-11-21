@@ -26,7 +26,12 @@ return {
   host = "c",
   -- servers_languages_spec.lua "stops collecting at max_files" writes 600 files and waits for the
   -- word-cache scan (vim.wait up to 30 s); on the Windows CI runner that exceeds the default 10 s.
-  timeouts = { case_ms = 30000 },
+  -- TESTS/lsp/probe_live_spec.lua is one case that waits for a real server twice (initialize,
+  -- then the probe: 30 s each, a cold gopls alone takes ~15 s) and then up to 5 s for the exit. With
+  -- 30 s per case the hard limit fired before those waits could end, so a slow machine (WSL under load)
+  -- read as a hang ("exceeds case_ms 30000") instead of the specific assertion about what stayed
+  -- silent. The budget covers both waits and the teardown (so does file_ms, default 60 s); the case's own timeouts stay the finite part.
+  timeouts = { case_ms = 75000, file_ms = 100000 },
   -- Safety nets (docs/GUARDS.md of testing.nvim). Every guard is an error: the suite leaves nothing behind but what
   -- setup() builds on purpose, which the state guard is told about below.
   guards = {
