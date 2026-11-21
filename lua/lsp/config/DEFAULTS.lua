@@ -421,7 +421,9 @@ local DEFAULTS = {
     -- `help_pages`: extra help files searched first, per filetype
     -- (`{ lua = { "luvref" } }`). A key for the help of the word under the
     -- cursor (`:Lsp help`) is `keymaps.map.word_help`.
-    deprecated_help = { enable = true, display = "hover", help_pages = {} },
+    -- `keymap`: the buffer-local key (every lua_ls buffer) for the help of the
+    -- last deprecated symbol; `false` binds none and the hints name none.
+    deprecated_help = { enable = true, keymap = "<leader>oh", display = "hover", help_pages = {} },
   },
 
   -- Filetype-specific quality-of-life setup under `lsp/languages/**`, applied

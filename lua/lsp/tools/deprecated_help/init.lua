@@ -44,7 +44,10 @@ function M.setup(opts)
   lsp_common.setup()
 
   -- set dynamic hint message for wrap.publish_diagnostics
-  opts.diagnostic_hint = " — press " .. defaults.keymap .. " to show the help for this symbol"
+  -- (no key, no hint: `keymap = false` leaves the text out)
+  opts.diagnostic_hint = defaults.keymap
+      and (" — press " .. defaults.keymap .. " to show the help for this symbol")
+    or ""
   publish_diagnostics.wrap(opts)
 end
 

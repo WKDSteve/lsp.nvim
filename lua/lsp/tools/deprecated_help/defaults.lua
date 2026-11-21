@@ -6,7 +6,8 @@
 local M = {}
 
 -- Default mapping (can be overridden via setup opts)
----@type string
+-- `false`: no key is bound (and the hint texts name none).
+---@type string|false
 M.keymap = "<leader>oh" -- open help for last detected symbol in the current buffer
 
 -- How the help is shown: "hover" (a float, focus stays) or "help" (`:help`)

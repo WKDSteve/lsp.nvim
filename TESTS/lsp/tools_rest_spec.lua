@@ -300,6 +300,30 @@ describe("lsp.tools.deprecated_help", function()
     assert.are.equal("<leader>lh", defaults.keymap)
   end)
 
+  it("takes `keymap = false` (no key, no hint text)", function()
+    local opts = { keymap = false }
+    require("lsp.tools.deprecated_help").setup(opts)
+    assert.is_false(defaults.keymap)
+    assert.are.equal("", opts.diagnostic_hint)
+  end)
+
+  it("names the configured key in the diagnostic hint", function()
+    local opts = { keymap = "<leader>lh" }
+    require("lsp.tools.deprecated_help").setup(opts)
+    assert.truthy(opts.diagnostic_hint:find("<leader>lh", 1, true))
+  end)
+
+  it("keeps the default key for a malformed keymap, with a warning", function()
+    local real, seen = vim.notify, {}
+    vim.notify = function(msg)
+      seen[#seen + 1] = tostring(msg)
+    end
+    require("lsp.tools.deprecated_help").setup({ keymap = 3 })
+    vim.notify = real
+    assert.are.equal("<leader>oh", defaults.keymap)
+    assert.truthy(seen[#seen] and seen[#seen]:find("keymap", 1, true))
+  end)
+
   it("still lets an explicit lua_ls.keymap win", function()
     require("lsp.tools.deprecated_help").setup({
       keymap = "<leader>a",

@@ -193,8 +193,8 @@ Defaults (excerpt -- the full table is `lua/lsp/config/DEFAULTS.lua`): >lua
         eslint_prettier = { enable = true, filetypes = { ... } },
         lsp_signature = { enable = true, border = "rounded" },
         ts_type_lookup = { enable = true },
-        deprecated_help = { enable = true, display = "hover",
-                            help_pages = {} },
+        deprecated_help = { enable = true, keymap = "<leader>oh",
+                            display = "hover", help_pages = {} },
       },
       languages = { enable = true, env_links = true },
       completion = {
@@ -565,6 +565,12 @@ tools.lsp_signature.border (string|string[])
                                   hover.nvim default; a hover.nvim style
                                   name (`heavy`, ...) is understood when
                                   that plugin is installed.
+tools.deprecated_help.keymap (string|false)
+                                  Buffer-local key, set in every lua_ls
+                                  buffer once a deprecated symbol is
+                                  reported, that shows the help of the last
+                                  one. Default `<leader>oh`; `false` binds
+                                  none, and the hint texts then name no key.
 tools.deprecated_help.display ("hover"|"help")
                                   How the help of a deprecated symbol is
                                   shown: "hover" (default) opens its entry

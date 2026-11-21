@@ -143,7 +143,7 @@ Buffer-local keys outside the catalogue (not affected by `keymaps.*`):
 
 | lhs | mode | where | description |
 | --- | --- | --- | --- |
-| `<leader>oh` | n | every `lua_ls` buffer, with `tools.deprecated_help.enable` | Help for the deprecated symbol lua_ls reported last; the diagnostic hint names this key |
+| `<leader>oh` | n | every `lua_ls` buffer, with `tools.deprecated_help.enable` | Help for the deprecated symbol lua_ls reported last; the diagnostic hint names this key. Set `tools.deprecated_help.keymap` to change it, `false` to bind none |
 
 <!-- END GENERATED KEYMAPS -->
 

@@ -148,6 +148,7 @@ describe("lsp.config", function()
       assert.are.equal("rounded", cfg.tools.lsp_signature.border)
       assert.is_true(cfg.tools.deprecated_help.enable)
       assert.are.equal("hover", cfg.tools.deprecated_help.display)
+      assert.are.equal("<leader>oh", cfg.tools.deprecated_help.keymap)
       assert.are.same({}, config.warnings())
     end)
 

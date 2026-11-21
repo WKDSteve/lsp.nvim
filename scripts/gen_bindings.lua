@@ -108,7 +108,7 @@ out[#out + 1] = "| lhs | mode | where | description |"
 out[#out + 1] = "| --- | --- | --- | --- |"
 out[#out + 1] = ("| `%s` | n | every `lua_ls` buffer, with `tools.deprecated_help.enable` | %s |"):format(
   cell(DH_DEFAULTS.keymap),
-  "Help for the deprecated symbol lua_ls reported last; the diagnostic hint names this key"
+  "Help for the deprecated symbol lua_ls reported last; the diagnostic hint names this key. Set `tools.deprecated_help.keymap` to change it, `false` to bind none"
 )
 
 out[#out + 1] = ""

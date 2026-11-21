@@ -180,10 +180,12 @@ require("lsp.@types.subsystem")
 ---@field border string|string[] # Border of the signature-help float and of its "No signature help" notice (default "rounded", as in hover.nvim).
 
 ---@class LspNvim.DeprecatedHelpTool: LspNvim.Tool
+---@field keymap string|false
 ---@field display "hover"|"help"
 ---@field help_pages table<string, string[]>
 
 ---@class LspNvim.DeprecatedHelpOpts: LspNvim.ToolOpts
+---@field keymap? string|false # Buffer-local key (every lua_ls buffer) for the help of the last deprecated symbol; `false` binds none and the diagnostic hint names none. Default "<leader>oh".
 ---@field display? "hover"|"help" # Show the help of a deprecated symbol, or of the word under the cursor, in a float ("hover") or with `:help` ("help").
 ---@field help_pages? table<string, string[]> # Per filetype, help files (on the runtimepath as `doc/<name>`, or paths) searched first for the word under the cursor, e.g. `{ lua = { "luvref" } }`.
 

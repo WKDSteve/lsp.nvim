@@ -117,15 +117,17 @@ local function on_publish(_err, result, ctx, _config)
         -- set buffer-local keymap to open help for the newest symbol
         M.last_symbol[bufnr] = symbol
         local lhs = defaults.keymap
-        local rhs_fn = function()
-          M.show_help(bufnr, M.last_symbol[bufnr])
+        if lhs then
+          local rhs_fn = function()
+            M.show_help(bufnr, M.last_symbol[bufnr])
+          end
+          helper.set_buf_keymap_once(
+            bufnr,
+            lhs,
+            rhs_fn,
+            { desc = "Open help for the last deprecated symbol in this buffer" }
+          )
         end
-        helper.set_buf_keymap_once(
-          bufnr,
-          lhs,
-          rhs_fn,
-          { desc = "Open help for the last deprecated symbol in this buffer" }
-        )
       end
     end
   end
@@ -135,8 +137,10 @@ end
 ---@param opts table|nil
 function M.setup(opts)
   opts = opts or {}
-  if opts.keymap and type(opts.keymap) == "string" then
+  if opts.keymap == false or (type(opts.keymap) == "string" and opts.keymap ~= "") then
     defaults.keymap = opts.keymap
+  elseif opts.keymap ~= nil then
+    notify.warn(("keymap: expected a string or false, got %s"):format(vim.inspect(opts.keymap)))
   end
   if opts.display == "hover" or opts.display == "help" then
     defaults.display = opts.display

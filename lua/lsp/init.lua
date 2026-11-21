@@ -313,6 +313,7 @@ local function setup_tools(cfg)
       -- No `word_keymap`: the key is the keymap catalogue's `word_help` entry
       -- (bindings/keymaps.lua); the tool's own option is for setting it up alone.
       require("lsp.tools.deprecated_help").setup({
+        keymap = dh.keymap,
         display = dh.display,
         help_pages = dh.help_pages,
       })
