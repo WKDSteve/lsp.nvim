@@ -214,12 +214,12 @@ return {
       land = true,
       packages = {
         {
-          -- TESTS/lsp/probe_live_spec.lua fails under CI without one of its servers (lua_ls, ts_ls, gopls). brew and
-          -- choco have lua-language-server; apt (ubuntu 24.04) has not, so the Linux leg installs gopls instead (Go is
-          -- on the ubuntu image).
-          name = "lua-language-server",
-          apt = "gopls",
-          why = "a real language server for the live probe of TESTS/lsp/probe_live_spec.lua (lua_ls; gopls on Linux)",
+          -- TESTS/lsp/probe_live_spec.lua fails under CI without one of its servers (lua_ls, ts_ls, gopls). apt and brew
+          -- install gopls (Go is on the ubuntu and macOS images); choco has no gopls, so the Windows leg installs
+          -- lua-language-server. lua_ls from brew ran into the 30 s case timeout on the hosted macOS leg (2026-11-21).
+          name = "gopls",
+          choco = "lua-language-server",
+          why = "a real language server for the live probe of TESTS/lsp/probe_live_spec.lua (gopls; lua_ls on Windows)",
         },
       },
       publish = {
