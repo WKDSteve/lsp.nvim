@@ -126,26 +126,10 @@ jobs:
           echo "d68da17fca0697d9e2fb04201f3884abd259fa558b3a449bccaed47f1390defc  $RUNNER_TEMP/luacheck" | sha256sum -c -
           install -D -m 755 "$RUNNER_TEMP/luacheck" "$HOME/.local/bin/luacheck"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      # gopls: a real language server for the live probe of TESTS/lsp/probe_live_spec.lua (gopls; lua_ls on Windows)
-      - name: Install gopls (Linux)
-        if: matrix.hosted && runner.os == 'Linux'
-        run: sudo apt-get install -y gopls
-      - name: Install gopls (macOS)
-        if: matrix.hosted && runner.os == 'macOS'
-        run: brew install gopls
-      - name: Install gopls (Windows)
-        if: matrix.hosted && runner.os == 'Windows'
-        run: choco install lua-language-server -y --no-progress
-      # go: gopls of the live probe loads its module with the Go toolchain
-      - name: Install go (Linux)
-        if: matrix.hosted && runner.os == 'Linux'
-        run: sudo apt-get install -y golang-go
-      - name: Install go (macOS)
-        if: matrix.hosted && runner.os == 'macOS'
-        run: brew install go
-      - name: Install go (Windows)
-        if: matrix.hosted && runner.os == 'Windows'
-        run: choco install golang -y --no-progress
+      # ts-ls: a real language server for the live probe of TESTS/lsp/probe_live_spec.lua
+      - name: Install ts-ls (npm)
+        if: matrix.hosted
+        run: npm install -g typescript@5 typescript-language-server
       # The result cache (docs/CI-CACHE.md of testing.nvim). The key is only the transport: every entry carries its
       # own full spec key and is checked against it when read, so a wrong restore can lower the hit rate and never turn
       # a result green. A pull request only restores; only a push to main saves.
