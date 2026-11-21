@@ -202,4 +202,45 @@ return {
       },
     },
   },
+  ci = {
+    -- The GitHub workflow, generated: `testing init --workflow=public --force` writes .github/workflows/ci.yml from
+    -- this (testing.nvim docs/WORKFLOW-CI.md); the step workflow-in-sync keeps the two together.
+    workflow = {
+      name = "lsp.nvim",
+      layout = "hosted",
+      -- the steps that depend on the platform: the windows and macOS legs run only these
+      platform = { "suite", "conformance" },
+      -- `testing ci land`: a check branch ci/** runs the hosted legs, main moves to a commit only once it is green there
+      land = true,
+      packages = {
+        {
+          -- TESTS/lsp/probe_live_spec.lua fails under CI without one of its servers (lua_ls, ts_ls, gopls). brew and
+          -- choco have lua-language-server; apt (ubuntu 24.04) has not, so the Linux leg installs gopls instead (Go is
+          -- on the ubuntu image).
+          name = "lua-language-server",
+          apt = "gopls",
+          why = "a real language server for the live probe of TESTS/lsp/probe_live_spec.lua (lua_ls; gopls on Linux)",
+        },
+      },
+      publish = {
+        why = "ci-verified is the ref consumers of lsp.nvim pin instead of main (lib.nvim templates/README.md)",
+      },
+    },
+    steps = {
+      ["workflow-in-sync"] = { preset = "workflow-in-sync" },
+      -- docs/BINDINGS.md's keymap tables are generated from the catalogue: --check is red when the two drift.
+      bindings = {
+        run = {
+          "nvim",
+          "-n",
+          "-i",
+          "NONE",
+          "--headless",
+          "-l",
+          "scripts/gen_bindings.lua",
+          "--check",
+        },
+      },
+    },
+  },
 }
